@@ -1,0 +1,6 @@
+[submodule "deps/signed-heat-3d"]
+	path = deps/signed-heat-3d
+	url = git@github.com:nzfeng/signed-heat-3d.git
+[submodule "deps/nanobind"]
+	path = deps/nanobind
+	url = https://github.com/wjakob/nanobind.git

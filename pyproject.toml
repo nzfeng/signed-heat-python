@@ -1,0 +1,33 @@
+[project]
+name = "signed_heat_python"
+version = "0.1.0"
+description = "Python bindings for the signed-heat-3d library"
+readme = "README.md"
+license.file = "LICENSE"
+authors = [
+  { name = "Nicole Feng", email = "nicolefeng7@gmail.com" },
+]
+maintainers = [
+  {  name = "Nicole Feng", email = "nicolefeng7@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.7"
+
+dependencies = [
+  "numpy"
+]
+
+[project.urls]
+Homepage = "https://github.com/nzfeng/signed-heat-python"
+
+[build-system]
+requires = ["scikit-build-core"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+build.verbose = true
+logging.level = "INFO"
