@@ -8,6 +8,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
+namespace nb = nanobind;
+
 using namespace geometrycentral;
 using namespace geometrycentral::surface;
 using namespace geometrycentral::pointcloud;
@@ -93,6 +95,20 @@ public:
     return solver->computeDistance(*pointGeom, options);
   }
 
+  std::tuple<DenseMatrix<double>, std::vector<std::vector<size_t>>> isosurface(const Vector<double>& phi,
+                                                                               const double& isoval) {
+    std::unique_ptr<SurfaceMesh> isoMesh;
+    std::unique_ptr<VertexPositionGeometry> isoGeom;
+    solver->isosurface(isoMesh, isoGeom, phi, isoval);
+    DenseMatrix<double> vertices(isoMesh->nVertices(), 3);
+    for (size_t i = 0; i < isoMesh->nVertices(); i++) {
+      for (int j = 0; j < 3; j++) {
+        vertices(i, j) = isoGeom->vertexPositions[i][j];
+      }
+    }
+    return std::make_tuple(vertices, isoMesh->getFaceVertexList());
+  }
+
 private:
   std::unique_ptr<SignedHeatTetSolver> solver;
 };
@@ -150,6 +166,9 @@ NB_MODULE(shm3d_bindings, m) {
         	nb::arg("h_coef"),
         	nb::arg("rebuild"),
         	nb::arg("scale"));
+        .def("isosurface", &SignedHeatTetSolverWrapper::isosurface,
+          nb::arg("phi"),
+          nb::arg("isoval"));
 
     nb::class_<SignedHeatGridSolverWrapper>(m, "SignedHeatGridSolver")
         .def(nb::init<bool>())

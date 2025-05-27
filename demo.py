@@ -161,15 +161,15 @@ class DemoSolver():
 			psim.Separator()
 			if psim.SliderFloat("Contour (drag slider)", self.isoval, np.min(self.phi), np.max(self.phi)): 
 				contour()
-	        if psim.InputFloat("Contour (enter value)", self.isoval): 
-	        	contour()
+			if psim.InputFloat("Contour (enter value)", self.isoval): 
+				contour()
 
-	        if self.contoured:
-	        	if psim.Button("Export isosurface"):
-	        		if self.last_solver_mode == "grid":
-	        			psIsoMesh = ps.get_surface_mesh("isosurface")
-	        			isoFilename = self.output_dir + "/isosurface_" + str(self.isoval) + ".obj"
-	        			write_surface_mesh(positions, psIsoMesh.vertices, psIsoMesh.faces)
+			if self.contoured:
+				if psim.Button("Export isosurface"):
+					if self.last_solver_mode == "grid":
+						psIsoMesh = ps.get_surface_mesh("isosurface")
+						isoFilename = self.output_dir + "/isosurface_" + str(self.isoval) + ".obj"
+						write_surface_mesh(positions, psIsoMesh.vertices, psIsoMesh.faces)
 
 	def solve(self):
 
@@ -232,19 +232,18 @@ def main():
 	else:
 		demo_solver.points, demo_solver.point_normals = read_point_cloud(filepath)
 
-    if not args.headless:
-    	ps.init()
-    	ps.set_user_callback(demo_solver.callback)
-    	if ext != ".pc":
-    		ps.register_surface_mesh("mesh", demo_solver.vertices, demo_solver.faces)
-    		if :
-    			ps.get_surface_mesh("mesh").set_all_permutations() # TODO
-    	else:
-    		ps.register_point_cloud("point cloud", demo_solver.points)
 
-    	ps.show()
-    else:
-    	demo_solver.solve()
+	if not args.headless:
+		ps.init()
+		ps.set_user_callback(demo_solver.callback)
+		if ext != ".pc":
+			ps.register_surface_mesh("mesh", demo_solver.vertices, demo_solver.faces)
+		else:
+			ps.register_point_cloud("point cloud", demo_solver.points)
+
+		ps.show()
+	else:
+		demo_solver.solve()
 
 if __name__ == '__main__':
 	main()

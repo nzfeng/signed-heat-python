@@ -1,4 +1,3 @@
-import numpy as np
 import shm3d_bindings as shm3db
 
 class SignedHeatTetSolver():
