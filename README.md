@@ -1,5 +1,10 @@
 # signed-heat-python
 
+**TODO**:
+* Fix competing Polyscopes used in Python program, and internally in C++ signed-heat-3d
+* documentation
+* demos, media
+
 A Python library implementing the [Signed Heat Method](https://nzfeng.github.io/research/SignedHeatMethod/index.html) for computing robust signed distance fields (SDFs) to polygon meshes and point clouds in 3D.
 
 * [signed-heat-demo](https://github.com/nzfeng/signed-heat-demo)
@@ -21,8 +26,8 @@ To run the demo program,
 ```
 cd signed-heat-python
 mkdir build && cd build
-cmake .. && make -j
-python3 ../demo.py
+cmake .. && make -j && cd ..
+python3 demo.py
 ```
 
 ## Documentation

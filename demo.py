@@ -92,10 +92,10 @@ class DemoSolver():
 	'''
 	Handles general solving (from mesh or point cloud), as well as visualization.
 	'''
-	def __init__(self, input_mode, use_grid=False, h_coef=0, verbose=True, headless=False):
+	def __init__(self, input_mode, use_grid=False, h_coef=0., verbose=True, headless=False):
 
 		self.input_mode = input_mode
-		self.grid = use_grid
+		self.mesh_mode = "grid" if use_grid else "tet"
 		self.h_coef = h_coef
 		self.t_coef = 1.
 		self.verbose = verbose
@@ -118,8 +118,8 @@ class DemoSolver():
 		self.ps_plane = ""
 		self.grid_scalar_q = []
 
-		self.tet_solver = SignedHeatTetSolver(verbose)
-		self.grid_solver = SignedHeatGridSolver(verbose)
+		self.tet_solver = shm3d.SignedHeatTetSolver(verbose)
+		self.grid_solver = shm3d.SignedHeatGridSolver(verbose)
 
 	def contour(self):
 
@@ -135,14 +135,58 @@ class DemoSolver():
 		self.contoured = True;
 		ps.get_surface_mesh("isosurface").set_ignore_slice_plane(self.ps_plane, True);
 
+	def solve(self):
+
+		cmap = "viridis"
+		if self.mesh_mode == "tet":
+			if self.verbose: print("\nSolving on tet mesh...")
+			t1 = time.time()
+			if self.input_mode == "mesh" :
+				self.phi = self.tet_solver.compute_distance_to_mesh(self.vertices, self.faces, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild)
+			else:
+				self.phi = self.tet_solver.compute_distance_to_point_cloud(self.points, self.point_normals, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild)
+			t2 = time.time()
+			if self.verbose: print("Solve time (s): %f" %(t2-t1))
+			if not self.headless:
+				ps.get_volume_mesh("domain").add_vertex_scalar_quantity("GSD", self.phi).set_color_map(cmap).set_isolines_enabled(True).set_enabled(True)
+		else:
+			if self.verbose: print("\nSolving on grid...")
+			t1 = time.time()
+			if self.input_mode == "mesh":
+				self.phi = self.grid_solver.compute_distance_to_mesh(self.vertices, self.faces, self.t_coef, self.h_coef, self.rebuild)
+			else:
+				self.phi = self.grid_solver.compute_distance_to_point_cloud(self.points, self.point_normals, self.t_coef, self.h_coef, self.rebuild)
+			t2 = time.time()
+			if self.verbose: print("Solve time (s): %f" %(t2-t1))
+			if not self.headless:
+				self.grid_scalar_q = ps.get_volume_mesh("domain").add_node.scalar_quantity("GSD", self.phi).set_color_map(cmap).set_isolines_enabled(True).setEnabled(True)
+
+		if self.verbose:
+			print("min: %f \tmax: %f" %(np.min(self.phi), np.max(self.phi)))
+
+		if not self.headless:
+			ps.remove_last_scene_slice_plane()
+			self.ps_plane = ps.add_scene_slice_plane()
+			self.ps_plane.set_draw_plane(False)
+			self.ps_plane.set_draw_widget(True)
+			if self.mesh_mode == "tet":
+				self.ps_plane.set_volume_mesh_to_inspect("domain")
+			if self.input_mode == "mesh":
+				ps.get_surface_mesh("mesh").set_ignore_slice_plane(self.ps_plane, True)
+			else:
+				ps.get_point_cloud("point cloud").set_ignore_slice_plane(self.ps_plane, True)
+
+		self.last_solver_mode = self.mesh_mode
+		self.rebuild = False
+
 	def callback(self):
 
 		if psim.Button("Solve"):
-			solve()
+			self.solve()
 		if psim.RadioButton("on tet mesh", self.mesh_mode == "tet"): 
-			self.mesh_mode == "tet"
+			self.mesh_mode = "tet"
 		if psim.RadioButton("on grid", self.mesh_mode == "grid"): 
-			self.mesh_mode == "grid"
+			self.mesh_mode = "grid"
 
 		_, self.t_coef = psim.InputFloat("tCoef (diffusion time)", self.t_coef)
 		self.rebuild, self.h_coef = psim.InputFloat("hCoef (mesh spacing)", self.h_coef)
@@ -160,77 +204,39 @@ class DemoSolver():
 			psim.Text("Contour options")
 			psim.Separator()
 			if psim.SliderFloat("Contour (drag slider)", self.isoval, np.min(self.phi), np.max(self.phi)): 
-				contour()
+				self.contour()
 			if psim.InputFloat("Contour (enter value)", self.isoval): 
-				contour()
+				self.contour()
 
 			if self.contoured:
 				if psim.Button("Export isosurface"):
 					if self.last_solver_mode == "grid":
 						psIsoMesh = ps.get_surface_mesh("isosurface")
 						isoFilename = self.output_dir + "/isosurface_" + str(self.isoval) + ".obj"
-						write_surface_mesh(positions, psIsoMesh.vertices, psIsoMesh.faces)
-
-	def solve(self):
-
-		cmap = "viridis"
-		if self.mesh_mode == "tet":
-			if self.verbose: print("\nSolving on tet mesh...")
-			t1 = time.time()
-			self.phi = self.tet_solver.compute_distance_to_mesh(self.vertices, self.faces, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild, self.scale) if (self.input_mode == "mesh") else self.tet_solver.compute_distance_to_point_cloud(self.points, self.normals, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild, self.scale)
-			t2 = time.time()
-			if self.verbose: print("Solve time (s): %f" %(t2-t1))
-			if not self.headless:
-				ps.get_volume_mesh("domain").add_vertex_scalar_quantity("GSD", self.phi).set_color_map(cmap).set_isolines_enabled(True).set_enabled(True)
-		else:
-			if self.verbose: print("\nSolving on grid...")
-			t1 = time.time()
-			self.phi = self.grid_solver.compute_distance_to_mesh(self.vertices, self.faces, self.t_coef, self.h_coef, self.rebuild, self.scale) if (self.input_mode == "mesh") else self.grid_solver.compute_distance_to_point_cloud(self.points, self.normals, self.t_coef, self.h_coef, self.rebuild, self.scale)
-			t2 = time.time()
-			if self.verbose: print("Solve time (s): %f" %(t2-t1))
-			if not self.headless:
-				self.grid_scalar_q = ps.get_volume_mesh("domain").add_node.scalar_quantity("GSD", self.phi).set_color_map(cmap).set_isolines_enabled(True).setEnabled(True)
-
-		if self.verbose:
-			print("min: %f \tmax: %f" %(np.min(self.phi), np.max(self.phi)))
-
-		if not headless:
-			ps.remove_last_scene_slice_plane()
-			self.ps_plane = ps.add_scene_slice_plane()
-			self.ps_plane.set_draw_plane(False)
-			self.ps_plane.set_draw_widget(True)
-			if self.mesh_mode == "tet":
-				self.ps_plane.set_volume_mesh_to_inspect("domain")
-			if self.input_mode == "mesh":
-				ps.get_surface_mesh("mesh").set_ignore_slice_plane(self.ps_plane, True)
-			else:
-				ps.get_point_cloud("point cloud").set_ignore_slice_plane(self.ps_plane, True)
-
-		self.last_solver_mode = self.mesh_mode
-		self.rebuild = False
+						write_surface_mesh(psIsoMesh.vertices, psIsoMesh.faces, isoFilename)
 
 
 def main():
 
 	parser = argparse.ArgumentParser("signed-heat")
 	parser.add_argument("input", help="A mesh or point cloud file.", type=str)
-	parser.add_argument('-h') # tet/grid spacing
-	parser.add_argument('-g', '--grid', action='store_true')
-	parser.add_argument('-v', '--verbose', action='store_true')
-	parser.add_argument('-l', '--headless', action='store_true')
+	parser.add_argument('-s', default=0.) # tet/grid spacing
+	parser.add_argument('-g', '--grid', action='store_true', default=False)
+	parser.add_argument('-v', '--verbose', action='store_true', default=True)
+	parser.add_argument('-l', '--headless', action='store_true', default=False)
 	args = parser.parse_args()
 
 	if not args.input:
 		raise RuntimeError("Please specify an input curve or mesh.")
 
-	filepath = os.path.basename(args.input)
-	meshname, ext = os.path.splitext(filepath)
-	input_mode = "cloud" if (ext == ".pc") else "mesh" 
-	demo_solver = DemoSolver(input_mode, args.grid, args.h, args.verbose, args.headless)
+	filename = os.path.basename(args.input)
+	meshname, ext = os.path.splitext(filename)
+	input_mode = "cloud" if (ext == ".pc") else "mesh"
+	demo_solver = DemoSolver(input_mode, args.grid, args.s, args.verbose, args.headless)
 	if ext != ".pc":
-		demo_solver.vertices, demo_solver.faces = read_polygon_mesh(filepath)
+		demo_solver.vertices, demo_solver.faces = read_polygon_mesh(args.input)
 	else:
-		demo_solver.points, demo_solver.point_normals = read_point_cloud(filepath)
+		demo_solver.points, demo_solver.point_normals = read_point_cloud(args.input)
 
 
 	if not args.headless:
