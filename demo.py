@@ -125,7 +125,7 @@ class DemoSolver():
 
 		if self.last_solver_mode == "tet":
 			self.iso_vertices, self.iso_faces = self.tet_solver.isosurface(self.phi, self.isoval)
-			ps.register_surface_mesh("isosurface", self.iso_vertices, self.iso_faces)
+			ps.register_surface_mesh("isosurface", self.iso_vertices, self.iso_faces, enabled=True)
 		else:
 			self.grid_scalar_q.set_isosurface_level(self.isoval)
 			self.grid_scalar_q.set_isosurface_viz_enabled(True)
@@ -136,19 +136,22 @@ class DemoSolver():
 		ps.get_surface_mesh("isosurface").set_ignore_slice_plane(self.ps_plane, True);
 
 	def solve(self):
-
 		cmap = "viridis"
+		if (self.mesh_mode != self.last_solver_mode): self.rebuild = True;
 		if self.mesh_mode == "tet":
 			if self.verbose: print("\nSolving on tet mesh...")
 			t1 = time.time()
-			if self.input_mode == "mesh" :
+			if self.input_mode == "mesh":
 				self.phi = self.tet_solver.compute_distance_to_mesh(self.vertices, self.faces, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild)
 			else:
 				self.phi = self.tet_solver.compute_distance_to_point_cloud(self.points, self.point_normals, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild)
 			t2 = time.time()
 			if self.verbose: print("Solve time (s): %f" %(t2-t1))
 			if not self.headless:
-				ps.get_volume_mesh("domain").add_vertex_scalar_quantity("GSD", self.phi).set_color_map(cmap).set_isolines_enabled(True).set_enabled(True)
+				if self.rebuild:
+					ps.register_volume_mesh("tet domain", self.tet_solver.get_vertices(), self.tet_solver.get_tets())
+				# TODO: isolines not yet bound in Polyscope: https://github.com/nmwsharp/polyscope-py/issues/36
+				ps.get_volume_mesh("tet domain").add_scalar_quantity("GSD", self.phi, cmap=cmap, enabled=True)
 		else:
 			if self.verbose: print("\nSolving on grid...")
 			t1 = time.time()
@@ -159,7 +162,11 @@ class DemoSolver():
 			t2 = time.time()
 			if self.verbose: print("Solve time (s): %f" %(t2-t1))
 			if not self.headless:
-				self.grid_scalar_q = ps.get_volume_mesh("domain").add_node.scalar_quantity("GSD", self.phi).set_color_map(cmap).set_isolines_enabled(True).setEnabled(True)
+				if self.rebuild:
+					grid_sizes = self.grid_solver.get_grid_resolution()
+					bboxMin, bboxMax = self.grid_solver.get_bbox()
+					ps.register_volume_grid("grid domain", grid_sizes, bboxMin, bboxMax)
+				self.grid_scalar_q = ps.get_volume_grid("grid domain").add_scalar_quantity("GSD", self.grid_solver.to_grid_array(self.phi), cmap=cmap, isolines_enabled=True, enabled=True)
 
 		if self.verbose:
 			print("min: %f \tmax: %f" %(np.min(self.phi), np.max(self.phi)))
@@ -170,7 +177,7 @@ class DemoSolver():
 			self.ps_plane.set_draw_plane(False)
 			self.ps_plane.set_draw_widget(True)
 			if self.mesh_mode == "tet":
-				self.ps_plane.set_volume_mesh_to_inspect("domain")
+				self.ps_plane.set_volume_mesh_to_inspect("tet domain")
 			if self.input_mode == "mesh":
 				ps.get_surface_mesh("mesh").set_ignore_slice_plane(self.ps_plane, True)
 			else:
@@ -189,7 +196,9 @@ class DemoSolver():
 			self.mesh_mode = "grid"
 
 		_, self.t_coef = psim.InputFloat("tCoef (diffusion time)", self.t_coef)
-		self.rebuild, self.h_coef = psim.InputFloat("hCoef (mesh spacing)", self.h_coef)
+		changed, self.h_coef = psim.InputFloat("hCoef (mesh spacing)", self.h_coef)
+		if changed:
+			self.rebuild = True
 
 		if self.mesh_mode != "grid":
 			if psim.RadioButton("Constrain zero set", self.constraint_mode == "ZeroSet"): 
@@ -199,21 +208,21 @@ class DemoSolver():
 			if psim.RadioButton("No level set constraints", self.constraint_mode == "None"): 
 				self.constraint_mode = "None"
 
-		if len(self.phi) > 0:
-			psim.Separator()
-			psim.Text("Contour options")
-			psim.Separator()
-			if psim.SliderFloat("Contour (drag slider)", self.isoval, np.min(self.phi), np.max(self.phi)): 
-				self.contour()
-			if psim.InputFloat("Contour (enter value)", self.isoval): 
-				self.contour()
+		# if len(self.phi) > 0:
+		# 	psim.Separator()
+		# 	psim.Text("Contour options")
+		# 	psim.Separator()
+		# 	if psim.SliderFloat("Contour (drag slider)", self.isoval, np.min(self.phi), np.max(self.phi)): 
+		# 		self.contour()
+		# 	if psim.InputFloat("Contour (enter value)", self.isoval): 
+		# 		self.contour()
 
-			if self.contoured:
-				if psim.Button("Export isosurface"):
-					if self.last_solver_mode == "grid":
-						psIsoMesh = ps.get_surface_mesh("isosurface")
-						isoFilename = self.output_dir + "/isosurface_" + str(self.isoval) + ".obj"
-						write_surface_mesh(psIsoMesh.vertices, psIsoMesh.faces, isoFilename)
+		# 	if self.contoured:
+		# 		if psim.Button("Export isosurface"):
+		# 			if self.last_solver_mode == "grid":
+		# 				psIsoMesh = ps.get_surface_mesh("isosurface")
+		# 				isoFilename = self.output_dir + "/isosurface_" + str(self.isoval) + ".obj"
+		# 				write_surface_mesh(psIsoMesh.vertices, psIsoMesh.faces, isoFilename)
 
 
 def main():

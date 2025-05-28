@@ -16,11 +16,12 @@ nanobind_add_module(shm3d_bindings
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/include)
 
-# Include directories from the submodules of signed-heat-3d... there's not too many of them
+# Include directories from all the submodules of signed-heat-3d... there's not toooo many of them
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/geometry-central/include)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/polyscope/include)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/libigl/include)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/tetgen)
+include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/amgcl)
 
 # Compile C++ code from signed-heat-3d
 set(SHM3D_SRCS
@@ -29,9 +30,9 @@ set(SHM3D_SRCS
   deps/signed-heat-3d/src/signed_heat_tet_solver.cpp
 )
 add_library(signed-heat-3d STATIC ${SHM3D_SRCS})
-target_link_libraries(signed-heat-3d PRIVATE geometry-central polyscope tetgen)
+target_link_libraries(signed-heat-3d PRIVATE geometry-central tetgen amgcl::amgcl)
 
-# Include targets the submodules of signed-heat-3d, necessary for the cpp files in this project
-target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d geometry-central polyscope)
+# Include targets from the submodules of signed-heat-3d, necessary for the cpp files in this project
+target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d geometry-central amgcl::amgcl) # confused why amgcl is needed here as well...
 
 install(TARGETS shm3d_bindings LIBRARY DESTINATION .)

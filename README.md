@@ -1,7 +1,6 @@
 # signed-heat-python
 
 **TODO**:
-* Fix competing Polyscopes used in Python program, and internally in C++ signed-heat-3d
 * documentation
 * demos, media
 
@@ -26,7 +25,8 @@ To run the demo program,
 ```
 cd signed-heat-python
 mkdir build && cd build
-cmake .. && make -j && cd ..
+cmake .. && make -j
+cd ..
 python3 demo.py
 ```
 
@@ -37,3 +37,8 @@ python3 demo.py
 For simplicity, input / output mesh files are assumed to be OBJ format, though this could be amended with an extra Python binding to [geometry-central](https://geometry-central.net/)'s IO functions.
 
 ### Signed heat method
+
+## TODOs
+
+* Contouring much slower than in [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d), because data is being passed by value with each call to the Python-bound functions
+* Isoline rendering for volume meshes is [not yet bound in Polyscope](https://github.com/nmwsharp/polyscope-py/issues/36); for now, SDFs can be rendered with isobands via the GUI only.

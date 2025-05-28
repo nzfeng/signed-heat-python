@@ -10,6 +10,7 @@
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/bind_vector.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/tuple.h>
 
 namespace nb = nanobind;
 
@@ -42,8 +43,9 @@ SignedHeat3DOptions toSignedHeatOptions(const std::string& levelSetConstraint, d
   return options;
 }
 
-std::unique_ptr<VertexPositionGeometry> makeSurfaceGeometry(const DenseMatrix<double>& vertices,
-                                                            const std::vector<std::vector<int64_t>>& faces) {
+std::tuple<std::unique_ptr<SurfaceMesh>, std::unique_ptr<VertexPositionGeometry>>
+makeSurfaceGeometry(const DenseMatrix<double>& vertices, const std::vector<std::vector<int64_t>>& faces) {
+
   std::vector<Vector3> vertexPositions;
   std::unique_ptr<SurfaceMesh> mesh;
   std::unique_ptr<VertexPositionGeometry> geometry;
@@ -67,16 +69,16 @@ std::unique_ptr<VertexPositionGeometry> makeSurfaceGeometry(const DenseMatrix<do
   }
 
   std::tie(mesh, geometry) = makeSurfaceMeshAndGeometry(polygons, vertexPositions);
-  return std::move(geometry);
+  return std::make_tuple(std::move(mesh), std::move(geometry));
 }
 
-std::unique_ptr<PointPositionNormalGeometry> makePointCloudGeometry(const DenseMatrix<double>& positions,
-                                                                    const DenseMatrix<double>& normals) {
+std::tuple<std::unique_ptr<PointCloud>, std::unique_ptr<PointPositionNormalGeometry>>
+makePointCloudGeometry(const DenseMatrix<double>& positions, const DenseMatrix<double>& normals) {
 
   size_t nPts = positions.rows();
-  PointCloud cloud = PointCloud(nPts);
-  PointData<Vector3> pointPositions = PointData<Vector3>(cloud);
-  PointData<Vector3> pointNormals = PointData<Vector3>(cloud);
+  std::unique_ptr<PointCloud> cloud = std::unique_ptr<PointCloud>(new PointCloud(nPts));
+  PointData<Vector3> pointPositions = PointData<Vector3>(*cloud);
+  PointData<Vector3> pointNormals = PointData<Vector3>(*cloud);
   for (size_t i = 0; i < nPts; i++) {
     for (int j = 0; j < 3; j++) {
       pointPositions[i][j] = positions(i, j);
@@ -84,8 +86,8 @@ std::unique_ptr<PointPositionNormalGeometry> makePointCloudGeometry(const DenseM
     }
   }
   std::unique_ptr<PointPositionNormalGeometry> pointGeom = std::unique_ptr<PointPositionNormalGeometry>(
-      new PointPositionNormalGeometry(cloud, pointPositions, pointNormals));
-  return std::move(pointGeom);
+      new PointPositionNormalGeometry(*cloud, pointPositions, pointNormals));
+  return std::make_tuple(std::move(cloud), std::move(pointGeom));
 }
 
 // A wrapper class for SignedHeatTetSolver, which exposes the parameters of `options`, and passes mesh data as Eigen
@@ -98,12 +100,18 @@ public:
     solver->VERBOSE = verbose;
   }
 
+  Eigen::MatrixXd get_vertices() const { return solver->getVertices(); }
+
+  Eigen::MatrixXi get_tets() const { return solver->getTets(); }
+
   Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
                                           const std::vector<std::vector<int64_t>>& faces,
                                           const std::string& levelSetConstraint, double tCoef, double hCoef,
                                           bool rebuild) {
 
-    std::unique_ptr<VertexPositionGeometry> geometry = makeSurfaceGeometry(vertices, faces);
+    std::unique_ptr<SurfaceMesh> mesh;
+    std::unique_ptr<VertexPositionGeometry> geometry;
+    std::tie(mesh, geometry) = makeSurfaceGeometry(vertices, faces);
     SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, hCoef, rebuild);
     return solver->computeDistance(*geometry, options);
   }
@@ -112,7 +120,9 @@ public:
                                                  const std::string& levelSetConstraint, double tCoef, double hCoef,
                                                  bool rebuild) {
 
-    std::unique_ptr<PointPositionNormalGeometry> pointGeom = makePointCloudGeometry(points, normals);
+    std::unique_ptr<PointCloud> cloud;
+    std::unique_ptr<PointPositionNormalGeometry> pointGeom;
+    std::tie(cloud, pointGeom) = makePointCloudGeometry(points, normals);
     SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, hCoef, rebuild);
     return solver->computeDistance(*pointGeom, options);
   }
@@ -158,11 +168,24 @@ public:
     solver->VERBOSE = verbose;
   }
 
+  std::vector<int64_t> get_grid_resolution() const {
+    // Manually copy to handle size_t -> int64_t conversion
+    // Warning: This might lead to unexpected failures on systems where size_t is smaller than 64 bits
+    std::vector<int64_t> sizes(3);
+    std::vector<size_t> res = solver->getGridResolution();
+    for (int i = 0; i < 3; i++) sizes[i] = res[i];
+    return sizes;
+  }
+
+  std::tuple<Eigen::Vector3d, Eigen::Vector3d> get_bbox() const { return solver->getBBox(); }
+
   Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
                                           const std::vector<std::vector<int64_t>>& faces, double tCoef, double hCoef,
                                           bool rebuild) {
 
-    std::unique_ptr<VertexPositionGeometry> geometry = makeSurfaceGeometry(vertices, faces);
+    std::unique_ptr<SurfaceMesh> mesh;
+    std::unique_ptr<VertexPositionGeometry> geometry;
+    std::tie(mesh, geometry) = makeSurfaceGeometry(vertices, faces);
     SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, hCoef, rebuild);
     return solver->computeDistance(*geometry, options);
   }
@@ -170,7 +193,9 @@ public:
   Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
                                                  double tCoef, double hCoef, bool rebuild) {
 
-    std::unique_ptr<PointPositionNormalGeometry> pointGeom = makePointCloudGeometry(points, normals);
+    std::unique_ptr<PointCloud> cloud;
+    std::unique_ptr<PointPositionNormalGeometry> pointGeom;
+    std::tie(cloud, pointGeom) = makePointCloudGeometry(points, normals);
     SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, hCoef, rebuild);
     return solver->computeDistance(*pointGeom, options);
   }
@@ -185,8 +210,13 @@ private:
 
 NB_MODULE(shm3d_bindings, m) {
 
+  nb::bind_vector<std::vector<int64_t>>(m, "VectorInt64");
+  nb::bind_vector<std::vector<std::vector<int64_t>>>(m, "VectorVectorInt64");
+
 	nb::class_<SignedHeatTetSolverWrapper>(m, "SignedHeatTetSolver")
       .def(nb::init<bool>())
+      .def("get_vertices", &SignedHeatTetSolverWrapper::get_vertices)
+      .def("get_tets", &SignedHeatTetSolverWrapper::get_tets)
       .def("compute_distance_to_mesh", &SignedHeatTetSolverWrapper::compute_distance_to_mesh, 
       	nb::arg("vertices"), 
       	nb::arg("faces"),
@@ -207,6 +237,8 @@ NB_MODULE(shm3d_bindings, m) {
 
   nb::class_<SignedHeatGridSolverWrapper>(m, "SignedHeatGridSolver")
       .def(nb::init<bool>())
+      .def("get_grid_resolution", &SignedHeatGridSolverWrapper::get_grid_resolution)
+      .def("get_bbox", &SignedHeatGridSolverWrapper::get_bbox)
       .def("compute_distance_to_mesh", &SignedHeatGridSolverWrapper::compute_distance_to_mesh, 
       	nb::arg("vertices"), 
       	nb::arg("faces"),
