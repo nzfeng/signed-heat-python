@@ -177,7 +177,7 @@ class DemoSolver():
 		if self.mesh_mode == "tet":
 			if self.verbose: print("\nSolving on tet mesh...")
 			t1 = time.time()
-			self.phi = self.tet_solver.compute_distance_to_mesh(self.vertices, self.faces, self.t_coef, self.h_coef, self.rebuild, self.scale) if (self.input_mode == "mesh") else self.tet_solver.compute_distance_to_point_cloud(self.points, self.normals, self.t_coef, self.h_coef, self.rebuild, self.scale)
+			self.phi = self.tet_solver.compute_distance_to_mesh(self.vertices, self.faces, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild, self.scale) if (self.input_mode == "mesh") else self.tet_solver.compute_distance_to_point_cloud(self.points, self.normals, self.constraint_mode, self.t_coef, self.h_coef, self.rebuild, self.scale)
 			t2 = time.time()
 			if self.verbose: print("Solve time (s): %f" %(t2-t1))
 			if not self.headless:

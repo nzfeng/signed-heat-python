@@ -1,10 +1,11 @@
 #include "geometrycentral/pointcloud/point_cloud.h"
-#include "geometrycentral/surface/meshio.h"
+#include "geometrycentral/surface/surface_mesh_factories.h"
 #include "geometrycentral/surface/vertex_position_geometry.h"
 
-#include "signed_heat_3d.h"
+#include "signed_heat_grid_solver.h"
+#include "signed_heat_tet_solver.h"
 
-#include <nanobind/eigen.h>
+#include <nanobind/eigen/dense.h>
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 
@@ -54,7 +55,7 @@ std::unique_ptr<PointPositionNormalGeometry> makePointCloudGeometry(const DenseM
 
   size_t nPts = positions.rows();
   PointCloud cloud = PointCloud(nPts);
-  pointPositions = pointcloud::PointData<Vector3>(*cloud);
+  PointData<Vector3> pointPositions = PointData<Vector3>(cloud);
   PointData<Vector3> pointNormals = PointData<Vector3>(cloud);
   for (size_t i = 0; i < nPts; i++) {
     for (int j = 0; j < 3; j++) {
@@ -74,21 +75,21 @@ class SignedHeatTetSolverWrapper {
 public:
   SignedHeatTetSolverWrapper(bool verbose) {
     solver.reset(new SignedHeatTetSolver());
-    solver.VERBOSE = verbose;
+    solver->VERBOSE = verbose;
   }
 
-  Vector<double> computeDistance(const DenseMatrix<double>& vertices, const std::vector<std::vector<size_t>>& faces,
-                                 std::string levelSetConstraint, double tCoef, double hCoef, bool rebuild,
-                                 double scale) {
+  Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
+                                          const std::vector<std::vector<size_t>>& faces, std::string levelSetConstraint,
+                                          double tCoef, double hCoef, bool rebuild, double scale) {
 
     std::unique_ptr<VertexPositionGeometry> geometry = makeSurfaceGeometry(vertices, faces);
     SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, hCoef, rebuild, scale);
     return solver->computeDistance(*geometry, options);
   }
 
-  Vector<double> computeDistance(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
-                                 std::string levelSetConstraint, double tCoef, double hCoef, bool rebuild,
-                                 double scale) {
+  Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
+                                                 std::string levelSetConstraint, double tCoef, double hCoef,
+                                                 bool rebuild, double scale) {
 
     std::unique_ptr<PointPositionNormalGeometry> pointGeom = makePointCloudGeometry(points, normals);
     SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, hCoef, rebuild, scale);
@@ -120,19 +121,20 @@ class SignedHeatGridSolverWrapper {
 public:
   SignedHeatGridSolverWrapper(bool verbose) {
     solver.reset(new SignedHeatGridSolver());
-    solver.VERBOSE = verbose;
+    solver->VERBOSE = verbose;
   }
 
-  Vector<double> computeDistance(const DenseMatrix<double>& vertices, const std::vector<std::vector<size_t>>& faces,
-                                 double tCoef, double hCoef, bool rebuild, double scale) {
+  Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
+                                          const std::vector<std::vector<size_t>>& faces, double tCoef, double hCoef,
+                                          bool rebuild, double scale) {
 
     std::unique_ptr<VertexPositionGeometry> geometry = makeSurfaceGeometry(vertices, faces);
     SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, hCoef, rebuild, scale);
     return solver->computeDistance(*geometry, options);
   }
 
-  Vector<double> computeDistance(const DenseMatrix<double>& points, const DenseMatrix<double>& normals, double tCoef,
-                                 double hCoef, bool rebuild, double scale) {
+  Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
+                                                 double tCoef, double hCoef, bool rebuild, double scale) {
 
     std::unique_ptr<PointPositionNormalGeometry> pointGeom = makePointCloudGeometry(points, normals);
     SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, hCoef, rebuild, scale);
@@ -150,41 +152,41 @@ private:
 NB_MODULE(shm3d_bindings, m) {
 
 	nb::class_<SignedHeatTetSolverWrapper>(m, "SignedHeatTetSolver")
-        .def(nb::init<bool>())
-        .def("compute_distance_to_mesh", &SignedHeatTetSolverWrapper::compute_distance, 
-        	nb::arg("vertices"), 
-        	nb::arg("faces"),
-        	nb::arg("level_set_constraint"),
-        	nb::arg("t_coef"),
-        	nb::arg("h_coef"),
-        	nb::arg("rebuild"),
-        	nb::arg("scale"));
-        .def("compute_distance_to_point_cloud", &SignedHeatTetSolverWrapper::compute_distance, 
-        	nb::arg("points"),
-        	nb::arg("normals"),
-        	nb::arg("t_coef"),
-        	nb::arg("h_coef"),
-        	nb::arg("rebuild"),
-        	nb::arg("scale"));
-        .def("isosurface", &SignedHeatTetSolverWrapper::isosurface,
-          nb::arg("phi"),
-          nb::arg("isoval"));
+      .def(nb::init<bool>())
+      .def("compute_distance_to_mesh", &SignedHeatTetSolverWrapper::compute_distance_to_mesh, 
+      	nb::arg("vertices"), 
+      	nb::arg("faces"),
+      	nb::arg("level_set_constraint"),
+      	nb::arg("t_coef"),
+      	nb::arg("h_coef"),
+      	nb::arg("rebuild"),
+      	nb::arg("scale"))
+      .def("compute_distance_to_point_cloud", &SignedHeatTetSolverWrapper::compute_distance_to_point_cloud, 
+      	nb::arg("points"),
+      	nb::arg("normals"),
+        nb::arg("level_set_constraint"),
+      	nb::arg("t_coef"),
+      	nb::arg("h_coef"),
+      	nb::arg("rebuild"),
+      	nb::arg("scale"))
+      .def("isosurface", &SignedHeatTetSolverWrapper::isosurface,
+        nb::arg("phi"),
+        nb::arg("isoval"));
 
-    nb::class_<SignedHeatGridSolverWrapper>(m, "SignedHeatGridSolver")
-        .def(nb::init<bool>())
-        .def("compute_distance_to_mesh", &SignedHeatGridSolverWrapper::compute_distance, 
-        	nb::arg("vertices"), 
-        	nb::arg("faces"),
-        	nb::arg("level_set_constraint"),
-        	nb::arg("t_coef"),
-        	nb::arg("h_coef"),
-        	nb::arg("rebuild"),
-        	nb::arg("scale"));
-        .def("compute_distance_to_point_cloud", &SignedHeatGridSolverWrapper::compute_distance, 
-        	nb::arg("points"),
-        	nb::arg("normals"),
-        	nb::arg("t_coef"),
-        	nb::arg("h_coef"),
-        	nb::arg("rebuild"),
-        	nb::arg("scale"));
+  nb::class_<SignedHeatGridSolverWrapper>(m, "SignedHeatGridSolver")
+      .def(nb::init<bool>())
+      .def("compute_distance_to_mesh", &SignedHeatGridSolverWrapper::compute_distance_to_mesh, 
+      	nb::arg("vertices"), 
+      	nb::arg("faces"),
+      	nb::arg("t_coef"),
+      	nb::arg("h_coef"),
+      	nb::arg("rebuild"),
+      	nb::arg("scale"))
+      .def("compute_distance_to_point_cloud", &SignedHeatGridSolverWrapper::compute_distance_to_point_cloud, 
+      	nb::arg("points"),
+      	nb::arg("normals"),
+      	nb::arg("t_coef"),
+      	nb::arg("h_coef"),
+      	nb::arg("rebuild"),
+      	nb::arg("scale"));
 }

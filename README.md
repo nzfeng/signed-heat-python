@@ -2,10 +2,9 @@
 
 A Python library implementing the [Signed Heat Method](https://nzfeng.github.io/research/SignedHeatMethod/index.html) for computing robust signed distance fields (SDFs) to polygon meshes and point clouds in 3D.
 
-* [](https://github.com/nzfeng/signed-heat-demo)
-* [](https://github.com/nzfeng/signed-heat-3d)
-* [](https://geometry-central.net/)
-* For more geometry processing tools on surface meshes in Python, check out [`potpourri3d`](http://geometry-central.net/). (The overall organization of this repository was inspired by that of `potpourri3d`!)
+* [signed-heat-demo](https://github.com/nzfeng/signed-heat-demo)
+* [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d)
+* For more geometry processing tools on surface meshes in Python, check out [`potpourri3d`](https://github.com/nmwsharp/potpourri3d). (The overall organization of this repository was inspired by that of `potpourri3d`!)
 
 ## Installation
 
@@ -28,9 +27,8 @@ python3 ../demo.py
 
 ## Documentation
 
-- [Input / Output](#input--output)
-- [Mesh basic utilities](#mesh-basic-utilities)
-
 ### Input / Output
 
-Read/write meshes and point clouds from some common formats.
+For simplicity, input / output mesh files are assumed to be OBJ format, though this could be amended with an extra Python binding to [geometry-central](https://geometry-central.net/)'s IO functions.
+
+### Signed heat method
