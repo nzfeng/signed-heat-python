@@ -7,8 +7,8 @@ import polyscope as ps
 import polyscope.imgui as psim
 
 # Path to where the bindings live
-sys.path.append(os.path.join(os.path.dirname(__file__), "build/"))
-sys.path.append(os.path.join(os.path.dirname(__file__), "src/"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../build/"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "../src/"))
 
 import shm3d
 

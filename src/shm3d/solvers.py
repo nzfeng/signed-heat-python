@@ -3,7 +3,7 @@ import shm3d_bindings as shm3db
 
 class SignedHeatTetSolver():
 
-	def __init__(self, verbose):
+	def __init__(self, verbose=True):
 		self.bound_solver = shm3db.SignedHeatTetSolver(verbose)
 
 	def get_vertices(self):
@@ -23,7 +23,7 @@ class SignedHeatTetSolver():
 
 class SignedHeatGridSolver():
 
-	def __init__(self, verbose):
+	def __init__(self, verbose=True):
 		self.bound_solver = shm3db.SignedHeatGridSolver(verbose)
 
 	def get_grid_resolution(self):
