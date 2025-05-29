@@ -34,6 +34,8 @@ python3 test/demo.py path/to/mesh/or/pointcloud
 
 For simplicity, input / output mesh files are assumed to be OBJ format, though this could be amended with an extra Python binding to [geometry-central](https://geometry-central.net/)'s IO functions.
 
+Point clouds are currently assumed to have file extension `.pc` and consist of newline-separated 3D point positions (denoted by leading char `v`) and point normal vectors (denoted by leading char `vn`).
+
 ### Command line arguments
 
 In addition to the mesh file, you can pass several flags.
