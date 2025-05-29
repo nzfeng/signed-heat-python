@@ -117,6 +117,8 @@ sdf_grid = grid_solver.compute_distance_to_point_cloud(P, N)
 
 ## TODOs
 
+* Testing, CI
+* Python package release
 * Contouring much slower than in [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d), because data is being passed by value with each call to the Python-bound functions
 * Isoline rendering for volume meshes is [not yet bound in Polyscope](https://github.com/nmwsharp/polyscope-py/issues/36); for now, SDFs can be rendered with isobands via the GUI only.
 * Handle more input file formats, via extra Python bindings to [geometry-central](https://geometry-central.net/)'s IO functions.
