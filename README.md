@@ -16,6 +16,17 @@ git clone --recursive https://github.com/nzfeng/signed-heat-python.git
 
 If you do not clone recursively, some submodules or sub-submodules will not clone. Initialize/update these submodules by running `git submodule update --init --recursive` or `git submodule update --recursive`.
 
+### Dependencies
+
+This project has the following submodules, which should have been installed in the previous step.
+* [nanobind](https://nanobind.readthedocs.io/en/latest/)
+* [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d)
+
+The demo program at `test/demo.py` uses the following libraries, which can each be installed via `pip install`:
+* [NumPy](https://numpy.org/)
+* [polyscope](https://polyscope.run/py/)
+* [mypy](https://mypy.readthedocs.io/en/latest/index.html) (assuming Python 3.8+)
+
 ## Getting started
 
 Documentation is [below](#documentation). This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. To run the demo program, 
@@ -52,18 +63,18 @@ To improve performance, operators and spatial discretizations are only built as 
 ### Signed distance to a mesh
 
 ```python
-import shm3d
+import signed_heat_method as shm
 
 V, F = # your mesh
 
 # Initalize tet mesh solver
-tet_solver = shm3d.SignedHeatTetSolver(verbose=True) # print all messages
+tet_solver = shm.SignedHeatTetSolver(verbose=True) # print all messages
 
 # Solve!
 sdf_tets = tet_solver.compute_distance_to_mesh(V, F)
 
 # Solve on a regular grid instead.
-grid_solver = shm3d.SignedHeatGridSolver(verbose=True)
+grid_solver = shm.SignedHeatGridSolver(verbose=True)
 sdf_grid = grid_solver.compute_distance_to_mesh(V, F)
 
 ```
@@ -80,18 +91,18 @@ sdf_grid = grid_solver.compute_distance_to_mesh(V, F)
 ### Signed distance to a point cloud
 
 ```python
-import shm3d
+import signed_heat_method as shm
 
 P, N = # your point cloud, with normals
 
 # Initalize tet mesh solver
-tet_solver = shm3d.SignedHeatTetSolver(verbose=True) # print all messages
+tet_solver = shm.SignedHeatTetSolver(verbose=True) # print all messages
 
 # Solve!
 sdf_tets = tet_solver.compute_distance_to_point_cloud(P, N)
 
 # Solve on a regular grid instead.
-grid_solver = shm3d.SignedHeatGridSolver(verbose=True)
+grid_solver = shm.SignedHeatGridSolver(verbose=True)
 sdf_grid = grid_solver.compute_distance_to_point_cloud(P, N)
 
 ```
@@ -120,5 +131,6 @@ sdf_grid = grid_solver.compute_distance_to_point_cloud(P, N)
 * Testing, CI
 * Python package release
 * Contouring much slower than in [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d), because data is being passed by value with each call to the Python-bound functions
+* More precise level set constraints for grid solves
 * Isoline rendering for volume meshes is [not yet bound in Polyscope](https://github.com/nmwsharp/polyscope-py/issues/36); for now, SDFs can be rendered with isobands via the GUI only.
 * Handle more input file formats, via extra Python bindings to [geometry-central](https://geometry-central.net/)'s IO functions.

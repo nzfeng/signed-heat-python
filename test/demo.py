@@ -2,6 +2,7 @@ import os, sys
 import argparse
 import numpy as np
 import time
+import typing
 
 import polyscope as ps
 import polyscope.imgui as psim
@@ -10,9 +11,9 @@ import polyscope.imgui as psim
 sys.path.append(os.path.join(os.path.dirname(__file__), "../build/"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../src/"))
 
-import shm3d
+import signed_heat_method as shm
 
-def read_polygon_mesh(filepath):
+def read_polygon_mesh(filepath: str) -> tuple[np.ndarray, list[list[int]]]:
 	'''
 	Read a surface mesh, assumed to be OBJ format.
 
@@ -39,7 +40,7 @@ def read_polygon_mesh(filepath):
 
 	return np.array(vertices, dtype=np.float64), faces
 
-def write_surface_mesh(vertices, faces, filepath):
+def write_surface_mesh(vertices: np.ndarray, faces: list[list[int]], filepath: str):
 	'''
 	Write a surface mesh as an OBJ file.
 
@@ -57,12 +58,12 @@ def write_surface_mesh(vertices, faces, filepath):
 		for i in range(n_vertices):
 			file.write('v %f %f %f\n' %(vertices[i,0], vertices[i,1], vertices[i,2]))
 		for i in range(n_faces):
-			f_idxs = ' '.join([str(v) + ' ' for v in faces[i]])
+			f_idxs = ' '.join([str(v + 1) + ' ' for v in faces[i]]) # OBJs are 1-indexed
 			file.write('f ' + f_idxs + '\n')
 
 	return np.array(vertices, dtype=np.float64), faces
 
-def read_point_cloud(filepath):
+def read_point_cloud(filepath: str):
 	'''
 	Read a point cloud and its normals, assumed to be a plaintext file of newline-separated point positions and normals.
 
@@ -92,7 +93,7 @@ class DemoSolver():
 	'''
 	Handles general solving (from mesh or point cloud), as well as visualization.
 	'''
-	def __init__(self, input_mode, use_grid=False, h_coef=0., verbose=True, headless=False):
+	def __init__(self, input_mode: str, use_grid: bool=False, h_coef: float=0., verbose: bool=True, headless: bool=False) -> None:
 
 		self.input_mode = input_mode
 		self.mesh_mode = "grid" if use_grid else "tet"
@@ -118,10 +119,10 @@ class DemoSolver():
 		self.ps_plane = ""
 		self.grid_scalar_q = []
 
-		self.tet_solver = shm3d.SignedHeatTetSolver(verbose)
-		self.grid_solver = shm3d.SignedHeatGridSolver(verbose)
+		self.tet_solver = shm.SignedHeatTetSolver(verbose)
+		self.grid_solver = shm.SignedHeatGridSolver(verbose)
 
-	def contour(self):
+	def contour(self) -> None:
 
 		if self.last_solver_mode == "tet":
 			self.iso_vertices, self.iso_faces = self.tet_solver.isosurface(self.phi, self.isoval)
@@ -135,7 +136,7 @@ class DemoSolver():
 		self.contoured = True;
 		ps.get_surface_mesh("isosurface").set_ignore_slice_plane(self.ps_plane, True);
 
-	def solve(self):
+	def solve(self) -> None:
 		cmap = "viridis"
 		if (self.mesh_mode != self.last_solver_mode): self.rebuild = True;
 		if self.mesh_mode == "tet":
@@ -186,7 +187,7 @@ class DemoSolver():
 		self.last_solver_mode = self.mesh_mode
 		self.rebuild = False
 
-	def callback(self):
+	def callback(self) -> None:
 
 		if psim.Button("Solve"):
 			self.solve()
@@ -236,7 +237,7 @@ def main():
 	args = parser.parse_args()
 
 	if not args.input:
-		raise RuntimeError("Please specify an input curve or mesh.")
+		raise RuntimeError("Please specify an input mesh or point cloud.")
 
 	filename = os.path.basename(args.input)
 	meshname, ext = os.path.splitext(filename)
