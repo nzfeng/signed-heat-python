@@ -25,7 +25,7 @@ This project has the following submodules, which should have been installed in t
 The demo program at `test/demo.py` uses the following libraries, which can each be installed via `pip install`:
 * [NumPy](https://numpy.org/)
 * [polyscope](https://polyscope.run/py/)
-* [mypy](https://mypy.readthedocs.io/en/latest/index.html) (assuming Python 3.8+)
+* [mypy](https://www.mypy-lang.org/) (assuming Python 3.8+)
 
 ## Getting started
 

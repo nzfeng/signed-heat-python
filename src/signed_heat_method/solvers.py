@@ -18,7 +18,7 @@ class SignedHeatTetSolver():
 	def compute_distance_to_point_cloud(self, P: np.ndarray, N: np.ndarray, level_set_constraint: str="ZeroSet", t_coef: float=1., h_coef: float=0., rebuild: bool=True) -> np.ndarray:
 		return self.bound_solver.compute_distance_to_point_cloud(P, N, level_set_constraint, t_coef, h_coef, rebuild)
 
-	def isosurface(self, phi: np.ndarray, isoval: float=0.): # TODO: -> tuple(np.ndarray, list[list[int]])
+	def isosurface(self, phi: np.ndarray, isoval: float=0.) -> tuple[np.ndarray, list[list[int]]]:
 		return self.bound_solver.isosurface(phi, isoval)
 
 class SignedHeatGridSolver():
@@ -29,7 +29,7 @@ class SignedHeatGridSolver():
 	def get_grid_resolution(self) -> list[int]:
 		return self.bound_solver.get_grid_resolution()
 
-	def get_bbox(self): # TODO: -> tuple(np.ndarray, np.ndarray)
+	def get_bbox(self) -> tuple[np.ndarray, np.ndarray]:
 		return self.bound_solver.get_bbox()
 
 	def to_grid_array(self, phi: np.ndarray) -> np.ndarray:
