@@ -42,7 +42,7 @@ jobs:
 
     - name: build
       run: |
-        if ["$RUNNER_OS" != "Windows"]; then
+        if ["$RUNNER_OS" != 'Windows']; then
             cd build && make
         else
             cd build && cmake --build "."
