@@ -54,7 +54,7 @@ jobs:
       run: python3 -m pip install numpy mypy pytest
 
     - name: configure
-      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug ..
+      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
     - name: build
       if: runner.os != 'Windows'
