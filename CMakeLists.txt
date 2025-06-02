@@ -22,6 +22,8 @@ include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/tetgen)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/amgcl)
 
+add_definitions(-UAMGCL_NO_BOOST)
+
 # Compile C++ code from signed-heat-3d
 set(SHM3D_SRCS
   deps/signed-heat-3d/src/signed_heat_3d.cpp
