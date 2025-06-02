@@ -67,14 +67,17 @@ jobs:
           ./wheelhouse/*.tar.gz
         overwrite: true
 
-  upload_pypi:
-    needs: [build_wheels, build_sdist]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-14, macos-13]
-      # upload to PyPI on every tag
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+  release:
+    name: Release
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/signed-heat-method
+    permissions:
+      id-token: write  # this permission is mandatory for trusted publishing
+      contents: write  # required to create a release
     steps:
     - uses: actions/download-artifact@v4
     - name: Flatten directory structure
@@ -82,18 +85,11 @@ jobs:
         mkdir -p dist/
         find . -name '*.whl' -exec mv {} dist/ \;
         find . -name '*.tar.gz' -exec mv {} dist/ \;
-
-    - name: List artifacts
-      run: ls -R
-
-      # - uses: pypa/gh-action-pypi-publish@v1.12.2
-      #   with:
-      #     user: __token__
-      #     password: ${{ secrets.PYPI_TOKEN }}
-
-    - name: Release
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+    - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         generate_release_notes: true
         files: |
-          ./dist/*.whl
+          ./**/*.whl
