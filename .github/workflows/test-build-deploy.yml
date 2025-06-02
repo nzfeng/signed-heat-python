@@ -67,33 +67,33 @@ jobs:
           ./wheelhouse/*.tar.gz
         overwrite: true
 
-upload_pypi:
-  needs: [build_wheels, build_sdist]
-  runs-on: ${{ matrix.os }}
-  strategy:
-    matrix:
-      os: [ubuntu-latest, windows-latest, macos-14, macos-13]
-    # upload to PyPI on every tag
-  if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-  steps:
-  - uses: actions/download-artifact@v4
-  - name: Flatten directory structure
-    run: |
-      mkdir -p dist/
-      find . -name '*.whl' -exec mv {} dist/ \;
-      find . -name '*.tar.gz' -exec mv {} dist/ \;
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14, macos-13]
+      # upload to PyPI on every tag
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    steps:
+    - uses: actions/download-artifact@v4
+    - name: Flatten directory structure
+      run: |
+        mkdir -p dist/
+        find . -name '*.whl' -exec mv {} dist/ \;
+        find . -name '*.tar.gz' -exec mv {} dist/ \;
 
-  - name: List artifacts
-    run: ls -R
+    - name: List artifacts
+      run: ls -R
 
-    # - uses: pypa/gh-action-pypi-publish@v1.12.2
-    #   with:
-    #     user: __token__
-    #     password: ${{ secrets.PYPI_TOKEN }}
+      # - uses: pypa/gh-action-pypi-publish@v1.12.2
+      #   with:
+      #     user: __token__
+      #     password: ${{ secrets.PYPI_TOKEN }}
 
-  - name: Release
-    uses: softprops/action-gh-release@v2
-    with:
-      generate_release_notes: true
-      files: |
-        ./dist/*.whl
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        generate_release_notes: true
+        files: |
+          ./dist/*.whl
