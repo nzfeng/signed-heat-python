@@ -43,29 +43,29 @@ jobs:
     - name: run test
       run: python3 test/test.py
 
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-14, macos-13]
+  # build_wheels:
+  #   name: Build wheels on ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest, windows-latest, macos-14, macos-13]
 
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: recursive
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #     with:
+  #       submodules: recursive
 
-    - name: Run cibuildwheel
-      uses: pypa/cibuildwheel@v2.22.0
+  #   - name: Run cibuildwheel
+  #     uses: pypa/cibuildwheel@v2.22.0
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: cibw-wheels-${{ matrix.os }}
-        path: |
-          ./wheelhouse/*.whl
-          ./wheelhouse/*.tar.gz
-        overwrite: true
+  #   - name: Upload wheels
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: cibw-wheels-${{ matrix.os }}
+  #       path: |
+  #         ./wheelhouse/*.whl
+  #         ./wheelhouse/*.tar.gz
+  #       overwrite: true
 
   release:
     name: Release
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/signed-heat-method
+      url: https://pypi.org/p/signed_heat_method
     permissions:
       id-token: write  # this permission is mandatory for trusted publishing
       contents: write  # required to create a release
