@@ -22,18 +22,6 @@ include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/tetgen)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/amgcl)
 
-# Find and require boost, for AMGCL.
-option(Boost_USE_STATIC_LIBS "Use static versions of Boost libraries" OFF)
-if (WIN32)
-    set(Boost_USE_STATIC_LIBS ON)
-endif ()
-
-find_package(Boost REQUIRED COMPONENTS
-    program_options
-    serialization
-    unit_test_framework
-)
-
 add_definitions(-UAMGCL_NO_BOOST)
 
 # Compile C++ code from signed-heat-3d
