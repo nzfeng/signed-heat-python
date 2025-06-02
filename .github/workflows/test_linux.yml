@@ -1,5 +1,5 @@
 # Adapted from potpourri3d
-name: Test macOS
+name: Test Linux
 
 on:
   push:
@@ -9,13 +9,13 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-
+      
     - uses: actions/setup-python@v5
       name: Install Python
       with:
@@ -25,7 +25,7 @@ jobs:
       run: python3 -m pip install numpy mypy pytest
 
     - name: configure
-      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug ..
+      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug -DPYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)") ..
 
     - name: build
       run: cd build && make
