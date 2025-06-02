@@ -67,29 +67,29 @@ jobs:
   #         ./wheelhouse/*.tar.gz
   #       overwrite: true
 
-  release:
-    name: Release
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [build_wheels]
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/signed_heat_method
-    permissions:
-      id-token: write  # this permission is mandatory for trusted publishing
-      contents: write  # required to create a release
-    steps:
-    - uses: actions/download-artifact@v4
-    - name: Flatten directory structure
-      run: |
-        mkdir -p dist/
-        find . -name '*.whl' -exec mv {} dist/ \;
-        find . -name '*.tar.gz' -exec mv {} dist/ \;
-    - name: Publish package distributions to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        generate_release_notes: true
-        files: |
-          ./**/*.whl
+  # release:
+  #   name: Release
+  #   if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+  #   needs: [build_wheels]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: pypi
+  #     url: https://pypi.org/p/signed_heat_method
+  #   permissions:
+  #     id-token: write  # this permission is mandatory for trusted publishing
+  #     contents: write  # required to create a release
+  #   steps:
+  #   - uses: actions/download-artifact@v4
+  #   - name: Flatten directory structure
+  #     run: |
+  #       mkdir -p dist/
+  #       find . -name '*.whl' -exec mv {} dist/ \;
+  #       find . -name '*.tar.gz' -exec mv {} dist/ \;
+  #   - name: Publish package distributions to PyPI
+  #     uses: pypa/gh-action-pypi-publish@release/v1
+  #   - name: Create GitHub Release
+  #     uses: softprops/action-gh-release@v2
+  #     with:
+  #       generate_release_notes: true
+  #       files: |
+  #         ./**/*.whl
