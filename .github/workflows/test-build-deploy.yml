@@ -41,12 +41,11 @@ jobs:
       run: cd build && make
 
     - name: build
-      run: |
-        if ["$RUNNER_OS" != 'Windows']; then
-            cd build && make
-        else
-            cd build && cmake --build "."
-        fi
+      if: runner.os != 'Windows'
+      run: cd build && make
+
+    - if: runner.os == 'Windows'
+      run: cd build && cmake --build "."
 
     - name: run test
       run: python3 test/test.py
