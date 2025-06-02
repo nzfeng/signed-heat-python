@@ -1,11 +1,14 @@
-# Adapted from potpourri3d
 name: Test Linux
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -14,8 +17,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: 'recursive'
-      
+        submodules: recursive
+
     - uses: actions/setup-python@v5
       name: Install Python
       with:

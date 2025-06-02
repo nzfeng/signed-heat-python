@@ -1,0 +1,99 @@
+name: Test and deploy
+
+on:
+  pull_request:
+  push:
+    tags:
+    - '*'
+    branches:
+    - main
+
+# disable concurrent runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14, macos-13]
+
+    if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - uses: actions/setup-python@v5
+      name: Install Python
+      with:
+        python-version: '3.9'
+
+    - name: install python packages
+      run: python3 -m pip install numpy mypy pytest
+
+    - name: configure
+      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug ..
+
+    - name: build
+      run: cd build && make
+
+    - name: run test
+      run: python3 test/test.py
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14, macos-13]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Run cibuildwheel
+      uses: pypa/cibuildwheel@v2.22.0
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: cibw-wheels-${{ matrix.os }}
+        path: |
+          ./wheelhouse/*.whl
+          ./wheelhouse/*.tar.gz
+        overwrite: true
+
+upload_pypi:
+  needs: [build_wheels, build_sdist]
+  runs-on: ${{ matrix.os }}
+  strategy:
+    matrix:
+      os: [ubuntu-latest, windows-latest, macos-14, macos-13]
+    # upload to PyPI on every tag
+  if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+  steps:
+  - uses: actions/download-artifact@v4
+  - name: Flatten directory structure
+    run: |
+      mkdir -p dist/
+      find . -name '*.whl' -exec mv {} dist/ \;
+      find . -name '*.tar.gz' -exec mv {} dist/ \;
+
+  - name: List artifacts
+    run: ls -R
+
+    # - uses: pypa/gh-action-pypi-publish@v1.12.2
+    #   with:
+    #     user: __token__
+    #     password: ${{ secrets.PYPI_TOKEN }}
+
+  - name: Release
+    uses: softprops/action-gh-release@v2
+    with:
+      generate_release_notes: true
+      files: |
+        ./dist/*.whl
