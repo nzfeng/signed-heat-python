@@ -26,24 +26,21 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set up conda environment
-      uses: conda-incubator/setup-miniconda@v2
-      with:
-        miniconda-version: latest
-        auto-update-conda: true
-        activate-environment: conda-env
-      if: runner.os == 'Windows' || runner.os == 'Linux'
-
     - name: Install Boost
       if: runner.os == 'macOS'
       shell: bash
       run: |
         brew upgrade
         brew install boost
-    - if: runner.os != 'macOS'
-      shell: bash
+    - if: runner.os == 'Linux'
       run: |
-        conda install -c conda-forge boost
+        sudo apt-get -y update
+        sudo apt-get -y install libboost-dev
+    - if: runner.os == 'Windows'
+      run: |
+        git clone --depth=1 --recurse-submodules -j10 https://github.com/boostorg/boost.git
+        cd boost
+        bootstrap.bat
 
     - uses: actions/setup-python@v5
       name: Install Python
@@ -54,14 +51,14 @@ jobs:
       run: python3 -m pip install numpy mypy pytest
 
     - name: configure
-      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+      run: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Debug .. -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DSHM_NO_AMGCL=Off
 
     - name: build
       if: runner.os != 'Windows'
       run: cd build && make
 
     - if: runner.os == 'Windows'
-      run: cd build && cmake --build "."
+      run: cd build && cmake --build "." -DSHM_NO_AMGCL=Off
 
     - name: run test
       run: python3 test/test.py
