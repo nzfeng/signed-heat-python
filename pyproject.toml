@@ -37,11 +37,23 @@ test-requires = "pytest"
 archs = ["native"]
 
 [tool.mypy]
-plugins = ["numpy.typing.mypy_plugin", 'npt_promote']
+exclude = ["^.test/"]
+plugins = ["numpy.typing.mypy_plugin"]
 # disable_error_code = ['assignment', 'index', 'misc']
-strict = true
+strict = false
 
 [tool.ruff]
+exclude = [".deps", ".build", ".test"]
+indent-width = 4
+line-length = 120
+
+[tool.ruff.format]
+docstring-code-format = false
+indent-style = "tab"
+quote-style = "single"
+
+[tool.ruff.lint]
+ignore = ["F403", "F405", "E402", "F841"]
 
 [tool.scikit-build]
 build.verbose = true

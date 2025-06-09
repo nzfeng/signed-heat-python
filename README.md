@@ -22,14 +22,16 @@ This project has the following submodules, which should have been installed in t
 * [nanobind](https://nanobind.readthedocs.io/en/latest/)
 * [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d)
 
-The demo program at `test/demo.py` uses the following libraries, which can each be installed via `pip install`:
+You may need to install Boost since `signed-heat-3d` depends on [`amgcl`](https://github.com/ddemidov/amgcl), which depends on Boost (`brew install boost` on macOS).
+
+The demo program at `test/demo.py` uses the following Python libraries, which can each be installed via `pip install`:
 * [NumPy](https://numpy.org/)
 * [polyscope](https://polyscope.run/py/)
 * [mypy](https://www.mypy-lang.org/) (assuming Python 3.8+)
 
 ## Getting started
 
-Documentation is [below](#documentation). This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. To run the demo program, 
+Documentation is [below](#documentation). This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. To run the demo program,
 
 ```
 cd signed-heat-python
