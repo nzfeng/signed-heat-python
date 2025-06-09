@@ -81,13 +81,17 @@ sdf_grid = grid_solver.compute_distance_to_mesh(V, F)
 
 ```
 
-- `SignedHeatTetSolver.compute_distance_to_mesh(V, F, level_set_constraint="ZeroSet", t_coef=1., h_coef=0., rebuild=True)`
-- `SignedHeatGridSolver.compute_distance_to_mesh(V, F, t_coef=1., h_coef=0., rebuild=True)`
+- `SignedHeatTetSolver.compute_distance_to_mesh(V, F, options)`
+- `SignedHeatGridSolver.compute_distance_to_mesh(V, F, options)`
   - `V` a |V| x 3 NumPy array of 3D vertex positions, where |V| = number of vertices in the source mesh.
   - `F` a list of lists; each sublist represents a polygonal mesh face of arbitrary degree (using 0-indexed vertices).
-  - `level_set_constraint` whether to apply level set constraints, with options "ZeroSet", "None", "Multiple". Generally set to "ZeroSet" (set by default).
-  - `t_coef` Set the time used for short-time heat flow. Generally don't change this.
-  - `h_coef` Controls the tet mesh/grid refinement, with larger `h` values indicating more refinement. Sets the maximum tetrahedron volume / grid cell length to a value proportional to $2^{-h}$. Default value is 0.
+
+`options` is a dictionary with the following possible entries:
+  - `level_set_constraint` Whether to apply level set constraints, with options "ZeroSet", "None", "Multiple". Generally set to "ZeroSet" (set by default).
+  - `t_coef` Sets the time used for short-time heat flow. Default value is 1. Generally don't change this.
+  - `bbox_min` The 3D position of the minimum corner of the computational domain, which is assumed to be an axis-aligned rectangular prism. If not specified, the size of the domain will be automatically computed so as to encompass the input source geometry.
+  - `bbox_max` The 3D position of the maximum corner of the computational domain.
+  - `resolution` 3D vector specifying the tet/grid spacing, with larger values indicating more refinement. If solving on a grid, this corresponds to the number of nodes along each dimension. Default values are $2^{5}$.
   - `rebuild` If `True`, (re)build the underlying tet mesh or grid domain.
 
 ### Signed distance to a point cloud
@@ -109,13 +113,16 @@ sdf_grid = grid_solver.compute_distance_to_point_cloud(P, N)
 
 ```
 
-- `SignedHeatTetSolver.compute_distance_to_point_cloud(P, N, level_set_constraint="ZeroSet", t_coef=1., h_coef=0., rebuild=True)`
-- `SignedHeatGridSolver.compute_distance_to_point_cloud(P, N, t_coef=1., h_coef=0., rebuild=True)`
+- `SignedHeatTetSolver.compute_distance_to_point_cloud(P, N, options)`
+- `SignedHeatGridSolver.compute_distance_to_point_cloud(P, N, options)`
   - `P` a |P| x 3 NumPy array of 3D point positions, where |P| = number of points in the source point cloud.
   - `N` a |P| x 3 NumPy array of 3D normal vectors, where |P| = number of points in the source point cloud.
-  - `level_set_constraint` whether to apply level set constraints, with options "ZeroSet", "None", "Multiple". Generally set to "ZeroSet" (set by default).
-  - `t_coef` Set the time used for short-time heat flow. Generally don't change this.
-  - `h_coef` Controls the tet mesh/grid refinement, with larger `h` values indicating more refinement. Sets the maximum tetrahedron volume / grid cell length to a value proportional to $2^{-h}$. Default value is 0.
+
+`options` is a dictionary with the following possible entries:
+  - `t_coef` Sets the time used for short-time heat flow. Default value is 1. Generally don't change this.
+  - `bbox_min` The 3D position of the minimum corner of the computational domain, which is assumed to be an axis-aligned rectangular prism. If not specified, the size of the domain will be automatically computed so as to encompass the input source geometry.
+  - `bbox_max` The 3D position of the maximum corner of the computational domain.
+  - `resolution` 3D vector specifying the tet/grid spacing, with larger values indicating more refinement. If solving on a grid, this corresponds to the number of nodes along each dimension. Default values are $2^{5}$.
   - `rebuild` If `True`, (re)build the underlying tet mesh or grid domain.
 
 ### Auxiliary functions
