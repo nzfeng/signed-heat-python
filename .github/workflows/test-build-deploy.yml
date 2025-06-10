@@ -36,11 +36,11 @@ jobs:
       run: |
         sudo apt-get -y update
         sudo apt-get -y install libboost-dev
-    - if: runner.os == 'Windows'
-      run: |
-        git clone --depth=1 --recurse-submodules -j10 https://github.com/boostorg/boost.git
-        cd boost
-        bootstrap.bat
+    # - if: runner.os == 'Windows'
+    #   run: |
+    #     git clone --depth=1 --recurse-submodules -j10 https://github.com/boostorg/boost.git
+    #     cd boost
+    #     bootstrap.bat
 
     - uses: actions/setup-python@v5
       name: Install Python
