@@ -26,16 +26,16 @@ jobs:
       with:
         submodules: recursive
 
-    # - name: Install Boost
-    #   if: runner.os == 'macOS'
-    #   shell: bash
-    #   run: |
-    #     brew upgrade
-    #     brew install boost
-    # - if: runner.os == 'Linux'
-    #   run: |
-    #     sudo apt-get -y update
-    #     sudo apt-get -y install libboost-dev
+    - name: Install Boost
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew upgrade
+        brew install boost
+    - if: runner.os == 'Linux'
+      run: |
+        sudo apt-get -y update
+        sudo apt-get -y install libboost-dev
     # - if: runner.os == 'Windows'
     #   run: |
     #     git clone --depth=1 --recurse-submodules -j10 https://github.com/boostorg/boost.git
