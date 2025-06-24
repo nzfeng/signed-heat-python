@@ -22,7 +22,7 @@ jobs:
 
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 

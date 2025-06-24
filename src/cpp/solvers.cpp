@@ -19,8 +19,8 @@ using namespace geometrycentral::surface;
 using namespace geometrycentral::pointcloud;
 
 SignedHeat3DOptions toSignedHeatOptions(const std::string& levelSetConstraint, double tCoef,
-                                        const Eigen::Vector3i& bboxMin, const Eigen::Vector3i& bboxMax,
-                                        const Eigen::Vector3d& resolution, bool rebuild) {
+                                        const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
+                                        const Eigen::Vector3i& resolution, bool rebuild) {
 
   auto toLower = [&](const std::string& s) -> std::string {
     std::string t = s;
@@ -112,8 +112,8 @@ public:
   Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
                                           const std::vector<std::vector<int64_t>>& faces,
                                           const std::string& levelSetConstraint, double tCoef,
-                                          const Eigen::Vector3i& bboxMin, const Eigen::Vector3i& bboxMax,
-                                          const Eigen::Vector3d& resolution, bool rebuild) {
+                                          const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
+                                          const Eigen::Vector3i& resolution, bool rebuild) {
 
     std::unique_ptr<SurfaceMesh> mesh;
     std::unique_ptr<VertexPositionGeometry> geometry;
@@ -124,8 +124,8 @@ public:
 
   Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
                                                  const std::string& levelSetConstraint, double tCoef,
-                                                 const Eigen::Vector3i& bboxMin, const Eigen::Vector3i& bboxMax,
-                                                 const Eigen::Vector3d& resolution, bool rebuild) {
+                                                 const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
+                                                 const Eigen::Vector3i& resolution, bool rebuild) {
 
     std::unique_ptr<PointCloud> cloud;
     std::unique_ptr<PointPositionNormalGeometry> pointGeom;
@@ -188,8 +188,8 @@ public:
 
   Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
                                           const std::vector<std::vector<int64_t>>& faces, double tCoef,
-                                          const Eigen::Vector3i& bboxMin, const Eigen::Vector3i& bboxMax,
-                                          const Eigen::Vector3d& resolution, bool rebuild) {
+                                          const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
+                                          const Eigen::Vector3i& resolution, bool rebuild) {
 
     std::unique_ptr<SurfaceMesh> mesh;
     std::unique_ptr<VertexPositionGeometry> geometry;
@@ -199,8 +199,8 @@ public:
   }
 
   Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
-                                                 double tCoef, const Eigen::Vector3i& bboxMin,
-                                                 const Eigen::Vector3i& bboxMax, const Eigen::Vector3d& resolution,
+                                                 double tCoef, const Eigen::Vector3d& bboxMin,
+                                                 const Eigen::Vector3d& bboxMax, const Eigen::Vector3i& resolution,
                                                  bool rebuild) {
 
     std::unique_ptr<PointCloud> cloud;
