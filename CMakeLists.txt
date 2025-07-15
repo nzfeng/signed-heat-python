@@ -26,11 +26,11 @@ add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST
 
 # Download Boost at CMake-time, if the user doesn't have it already.
 # Make sure we have Boost (for AMGCL)
-if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 NEW)
-endif()
-find_package(Boost REQUIRED)
-target_include_directories(shm3d_bindings PRIVATE ${Boost_INCLUDE_DIRS})
+#if(POLICY CMP0167)
+#  cmake_policy(SET CMP0167 NEW)
+#endif()
+#find_package(Boost REQUIRED)
+#target_include_directories(shm3d_bindings PRIVATE ${Boost_INCLUDE_DIRS})
 
 # Compile C++ code from signed-heat-3d
 set(SHM3D_SRCS
