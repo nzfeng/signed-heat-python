@@ -18,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest] # ubuntu-latest, macos-13, macos-14, windows-latest
+        os: [macos-13, macos-14] # ubuntu-latest, macos-13, macos-14, windows-latest
 
     if: "! contains(toJSON(github.event.commits.*.message), '[ci skip]')"
     steps:
