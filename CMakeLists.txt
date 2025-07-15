@@ -22,7 +22,23 @@ include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/tetgen)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/deps/amgcl)
 
-add_definitions(-UAMGCL_NO_BOOST)
+add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
+
+# Download Boost at CMake-time, if the user doesn't have it already.
+
+#set(BOOST_INCLUDE_LIBRARIES property_tree)
+#set(BOOST_ENABLE_CMAKE ON)
+#include(FetchContent)
+#FetchContent_Declare(
+#  Boost
+#  GIT_REPOSITORY https://github.com/boostorg/boost.git
+#  GIT_TAG boost-1.80.0
+#  GIT_SHALLOW TRUE
+#)
+#FetchContent_MakeAvailable(Boost)
+
+find_package(Boost REQUIRED)
+target_include_directories(shm3d_bindings PRIVATE ${Boost_INCLUDE_DIRS})
 
 # Compile C++ code from signed-heat-3d
 set(SHM3D_SRCS
