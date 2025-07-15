@@ -25,19 +25,7 @@ include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-
 add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
 
 # Download Boost at CMake-time, if the user doesn't have it already.
-
-#set(BOOST_INCLUDE_LIBRARIES property_tree)
-#set(BOOST_ENABLE_CMAKE ON)
-#include(FetchContent)
-#FetchContent_Declare(
-#  Boost
-#  GIT_REPOSITORY https://github.com/boostorg/boost.git
-#  GIT_TAG boost-1.80.0
-#  GIT_SHALLOW TRUE
-#)
-#FetchContent_MakeAvailable(Boost)
-
-
+# Make sure we have Boost (for AMGCL)
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
