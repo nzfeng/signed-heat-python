@@ -31,7 +31,7 @@ add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST
 #find_package(Boost REQUIRED)
 #target_include_directories(shm3d_bindings PRIVATE ${Boost_INCLUDE_DIRS})
 
-find_package(Boost REQUIRED COMPONENTS property_tree)
+find_package(Boost REQUIRED)
 if(NOT Boost_FOUND)
 	message(FATAL_ERROR "Boost Not found")
 endif()
