@@ -73,13 +73,13 @@ jobs:
         path: wheelhouse/*.whl
         name: signed_heat_method-wheels-${{ matrix.os }}
 
-  upload_pypi:
-    name: Upload release to PyPI
+  # upload_pypi:
+  #   name: Upload release to PyPI
 
-    if: contains(github.event.head_commit.message, '[ci publish]')
+  #   if: contains(github.event.head_commit.message, '[ci publish]')
 
-    needs: [build_wheels, build_sdist]
-    runs-on: ubuntu-latest
+  #   needs: [build_wheels, build_sdist]
+  #   runs-on: ubuntu-latest
 
     # steps:
     # - uses: actions/download-artifact@v4
