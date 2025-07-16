@@ -63,6 +63,5 @@ build-dir = "build/{wheel_tag}"
 minimum-version = "0.10"
 build.verbose = true
 cmake.build-type = "Release"
-cmake.version = ">=3.5.0"
 logging.level = "INFO"
 sdist.exclude = [".github", "*.png", "tests", ".mypy_cache", ".pre-commit-config.yaml", "*_cache", "CONTRIBUTING.md", ".gitignore", ".gitmodules"]
