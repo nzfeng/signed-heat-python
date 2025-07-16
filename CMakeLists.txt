@@ -54,6 +54,12 @@ else()
   message( FATAL_ERROR "Unrecognized compiler [${CMAKE_CXX_COMPILER_ID}]" )
 endif()
 
+# set location of eigen for geometry-central
+set(GC_EIGEN_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/deps/eigen" CACHE PATH "my path")
+
+# geometry-central
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory(deps/signed-heat-3d)
 add_subdirectory(deps/nanobind)
 
