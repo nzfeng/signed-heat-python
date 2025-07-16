@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 
-from demo import *  # get IO functions
+from mesh_io import *
 
 # Path to where the bindings live
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
@@ -41,12 +41,12 @@ def approximate_signed_distance(Q: np.ndarray, P: np.ndarray, N: np.ndarray) -> 
 	Approximate signed distance from a set of query points to an oriented point set, using pseudonormal distance.
 
 	Args:
-	        Q: _ x 3 NumPy array (query points)
-	        P: _ x 3 NumPy array
-	        N: _ x 3 NumPy array
+		Q: _ x 3 NumPy array (query points)
+		P: _ x 3 NumPy array
+		N: _ x 3 NumPy array
 
 	Returns:
-	        |Q| x 3 NumPy array
+		|Q| x 3 NumPy array
 	"""
 	Q_expanded = Q[:, np.newaxis, :]
 	P_expanded = P[np.newaxis, :, :]
