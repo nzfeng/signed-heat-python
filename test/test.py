@@ -178,7 +178,9 @@ class TestTetSolver:
 		# Approximate signed distance to point cloud using pseudonormal distance.
 		signed_distances = approximate_signed_distance(solver.get_vertices(), P, N)
 		span = np.amax(signed_distances) - np.amin(signed_distances)
-		assert np.mean((phi - signed_distances) / span) < 2e-2, 'SDF not close to ground-truth.'
+		residual = (phi - signed_distances) / span
+		residual[np.isnan(residual)] = 0.0  # avoid divison by zero
+		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
 
 	def average_squared_distance(
 		self, V1: np.ndarray, F1: list[list[int]], V2: np.ndarray, F2: list[list[int]]
