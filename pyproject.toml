@@ -2,6 +2,10 @@
 build-backend = "scikit_build_core.build"
 requires = ["scikit-build-core"]
 
+[cmake.define]
+logging.level = "INFO"
+sdist.exclude = [".github", "*.png", "test", ".mypy_cache", ".pre-commit-config.yaml", "*_cache", "CONTRIBUTING.md", ".gitignore", ".gitmodules"]
+
 [project]
 authors = [
   {name = "Nicole Feng", email = "nfeng@andrew.cmu.edu"}
@@ -64,5 +68,3 @@ minimum-version = "0.10"
 build.verbose = true
 cmake.build-type = "Release"
 cmake.version = "CMakeLists.txt"
-logging.level = "INFO"
-sdist.exclude = [".github", "*.png", "tests", ".mypy_cache", ".pre-commit-config.yaml", "*_cache", "CONTRIBUTING.md", ".gitignore", ".gitmodules"]
