@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.5)
 project(shm3d_bindings)
 
 # Copied from signed-heat-3d (and hence gc-polyscope-project-template)
