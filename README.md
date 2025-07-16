@@ -1,4 +1,4 @@
-# signed-heat-python
+# signed_heat_method
 
 ![teaser image](https://github.com/nzfeng/signed-heat-3d/blob/main/media/teaser.png)
 
@@ -10,11 +10,25 @@ A Python library implementing the [Signed Heat Method](https://nzfeng.github.io/
 
 ## Installation
 
+The recommended way to install `signed_heat_method` is via PyPI:
+
+```
+pip install signed_heat_method
+```
+You can also clone the repository and install it from source:
 ```
 git clone --recursive https://github.com/nzfeng/signed-heat-python.git
+cd signed-heat-python
+git submodule update --init --recursive
+pip install .
 ```
-
 If you do not clone recursively, some submodules or sub-submodules will not clone. Initialize/update these submodules by running `git submodule update --init --recursive` or `git submodule update --recursive`.
+
+If you are a developer, then it is usually much more efficient to install the build dependencies in your environment once and use the following command that avoids creating a new virtual environment at every compilation:
+
+```
+pip install --no-build-isolation -ve .
+```
 
 ### Dependencies
 
@@ -31,13 +45,11 @@ The demo program at `test/demo.py` uses the following Python libraries, which ca
 
 ## Getting started
 
-Documentation is [below](#documentation). This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. To run the demo program,
+Documentation is [below](#documentation). This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. To run the demo program, pip-install the package using the instructions described [above](#installation).
 
+Then `cd` into the top level of the directory, and run
 ```
-cd signed-heat-python
-mkdir build && cd build
-cmake .. && make -j
-cd ..
+
 python3 test/demo.py path/to/mesh/or/pointcloud
 ```
 

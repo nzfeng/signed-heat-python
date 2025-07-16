@@ -97,4 +97,4 @@ target_link_libraries(signed-heat-3d PRIVATE geometry-central tetgen amgcl::amgc
 # Include targets from the submodules of signed-heat-3d, necessary for the cpp files in this project
 target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d geometry-central amgcl::amgcl) # confused why amgcl is needed here as well...
 
-install(TARGETS shm3d_bindings LIBRARY DESTINATION .)
+install(TARGETS shm3d_bindings LIBRARY DESTINATION shm3d_bindings)

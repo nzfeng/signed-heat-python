@@ -1,5 +1,4 @@
 import os
-import sys
 import argparse
 import numpy as np
 import time
@@ -9,9 +8,9 @@ import polyscope.imgui as psim
 
 from mesh_io import *
 
-# Path to where the bindings live
-sys.path.append(os.path.join(os.path.dirname(__file__), '../build/'))
-sys.path.append(os.path.join(os.path.dirname(__file__), '../src/'))
+# # Path to where the bindings live
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../build/'))
+# sys.path.append(os.path.join(os.path.dirname(__file__), '../src/'))
 
 import signed_heat_method as shm
 

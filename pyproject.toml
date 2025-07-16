@@ -4,7 +4,7 @@ requires = ["scikit-build-core"]
 
 [project]
 authors = [
-  {name = "Nicole Feng", email = "nicolefeng7@gmail.com"}
+  {name = "Nicole Feng", email = "nfeng@andrew.cmu.edu"}
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -16,7 +16,7 @@ dependencies = [
 ]
 description = "Python bindings for the signed-heat-3d library"
 maintainers = [
-  {name = "Nicole Feng", email = "nicolefeng7@gmail.com"}
+  {name = "Nicole Feng", email = "nfeng@andrew.cmu.edu"}
 ]
 name = "signed_heat_method"
 readme = "README.md"
@@ -25,11 +25,13 @@ version = "0.1.0"
 license.file = "LICENSE"
 
 [project.urls]
+Documentation = "https://github.com/nzfeng/signed-heat-python"
 Homepage = "https://github.com/nzfeng/signed-heat-python"
+Issues = "https://github.com/nzfeng/signed-heat-python/issues"
+Repository = "https://github.com/nzfeng/signed-heat-python"
 
 [tool.cibuildwheel]
-archs = ["auto64"]  # 64-bit only
-skip = "cp37-* pp* *musllinux*"  # disable PyPy and musl-based wheels
+# Run pytest to ensure that the package was correctly built
 test-command = "pytest {project}/test"
 test-requires = "pytest"
 
@@ -56,5 +58,10 @@ quote-style = "single"
 ignore = ["F403", "F405", "E402", "F841"]
 
 [tool.scikit-build]
+# Setuptools-style build caching in a local directory
+build-dir = "build/{wheel_tag}"
+minimum-version = "0.10"
 build.verbose = true
+cmake.build-type = "Release"
 logging.level = "INFO"
+sdist.exclude = [".github", "*.png", "tests", ".mypy_cache", ".pre-commit-config.yaml", "*_cache", "CONTRIBUTING.md", ".gitignore", ".gitmodules"]
