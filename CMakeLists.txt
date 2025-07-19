@@ -85,7 +85,7 @@ add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST
 
 # Make sure we have Boost (for AMGCL)
 if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 NEW)
+  cmake_policy(SET CMP0167 OLD)
 endif()
 find_package(Boost)
 if(NOT Boost_FOUND)
@@ -103,9 +103,9 @@ if(NOT Boost_FOUND)
 	)
 	FetchContent_MakeAvailable(Boost)
 	find_package(Boost)
-	message(" ${Boost_LIBRARIES}")
-	message(" ${Boost_INCLUDE_DIRS}")
-	include_directories(${Boost_INCLUDE_DIRS})
+	message("Boost libraries: ${Boost_LIBRARIES}")
+	message("Boost include directories: ${Boost_INCLUDE_DIRS}")
+	include_directories(shm3d_bindings ${Boost_INCLUDE_DIRS})
 endif()
 
 # Compile C++ code from signed-heat-3d
