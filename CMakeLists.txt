@@ -90,7 +90,7 @@ endif()
 find_package(Boost)
 if(NOT Boost_FOUND)
 	message("Boost not found")
-	message(STATUS "Downloading and extracting boost library sources. This will take some time...")
+	message(STATUS "Downloading and extracting Boost library sources. This will take some time...")
 	set(BOOST_INCLUDE_LIBRARIES property_tree)
 	set(BOOST_ENABLE_CMAKE ON)
 	Set(FETCHCONTENT_QUIET FALSE) # print downloading progress
@@ -102,6 +102,9 @@ if(NOT Boost_FOUND)
 	  GIT_SHALLOW TRUE
 	)
 	FetchContent_MakeAvailable(Boost)
+	find_package(Boost)
+	message(" ${Boost_LIBRARIES})
+	include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
 # Compile C++ code from signed-heat-3d
