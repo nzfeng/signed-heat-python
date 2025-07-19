@@ -89,7 +89,19 @@ if(POLICY CMP0167)
 endif()
 find_package(Boost REQUIRED)
 if(NOT Boost_FOUND)
-	message(FATAL_ERROR "Boost Not found")
+	message("Boost not found")
+	message(STATUS "Downloading and extracting boost library sources. This will take some time...")
+	set(BOOST_INCLUDE_LIBRARIES property_tree)
+	set(BOOST_ENABLE_CMAKE ON)
+	Set(FETCHCONTENT_QUIET FALSE) # print downloading progress
+	include(FetchContent)
+	FetchContent_Declare(
+	  Boost
+	  GIT_REPOSITORY https://github.com/boostorg/boost.git
+	  GIT_TAG boost-1.73.0
+	  GIT_SHALLOW TRUE
+	)
+	FetchContent_MakeAvailable(Boost)
 endif()
 
 # Compile C++ code from signed-heat-3d
