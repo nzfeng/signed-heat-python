@@ -87,7 +87,7 @@ add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
-find_package(Boost REQUIRED)
+find_package(Boost)
 if(NOT Boost_FOUND)
 	message("Boost not found")
 	message(STATUS "Downloading and extracting boost library sources. This will take some time...")
