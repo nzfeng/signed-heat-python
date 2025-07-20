@@ -128,7 +128,7 @@ class TestTetSolver:
 	def test_get_vertices(self) -> None:
 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		solve_options = {'rebuild': True, 'resolution': np.array([8, 8, 8])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		vertices = solver.get_vertices()
 		assert len(vertices.shape) == 2, 'Vertex array of tet mesh should be a 2D NumPy array.'
@@ -140,7 +140,7 @@ class TestTetSolver:
 	def test_get_tets(self) -> None:
 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		solve_options = {'rebuild': True, 'resolution': np.array([8, 8, 8])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		vertices = solver.get_vertices()
 		tets = solver.get_tets()
@@ -158,7 +158,7 @@ class TestTetSolver:
 	def test_compute_distance_to_mesh(self) -> None:
 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		solve_options = {'rebuild': True, 'resolution': np.array([8, 8, 8])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Approximate the ground-truth distance, assuming test mesh is closed & perfect.
@@ -171,7 +171,7 @@ class TestTetSolver:
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		solve_options = {'rebuild': True, 'resolution': np.array([8, 8, 8])}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Make sure distance is close to naive distance
