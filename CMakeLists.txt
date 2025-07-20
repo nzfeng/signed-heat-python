@@ -107,6 +107,8 @@ if(NOT Boost_FOUND)
 	#message("Boost include directories: ${Boost_INCLUDE_DIRS}")
 	#include_directories(shm3d_bindings ${Boost_INCLUDE_DIRS})
 	include_directories(${boost_SOURCE_DIR}/libs/property_tree/include/)
+	include_directories(${boost_SOURCE_DIR}/libs/config/include/)
+	message(${boost_SOURCE_DIR})
 endif()
 
 # Compile C++ code from signed-heat-3d
