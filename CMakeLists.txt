@@ -106,9 +106,17 @@ if(NOT Boost_FOUND)
 	#message("Boost libraries: ${Boost_LIBRARIES}")
 	#message("Boost include directories: ${Boost_INCLUDE_DIRS}")
 	#include_directories(shm3d_bindings ${Boost_INCLUDE_DIRS})
-	include_directories(${boost_SOURCE_DIR}/libs/property_tree/include/)
-	include_directories(${boost_SOURCE_DIR}/libs/config/include/)
-	message(${boost_SOURCE_DIR})
+
+	#include_directories(${boost_SOURCE_DIR}/libs/property_tree/include/)
+	#include_directories(${boost_SOURCE_DIR}/libs/config/include/)
+
+	# Gosh, I hate Boost and how every file is included in every other file
+	file(GLOB V_GLOB LIST_DIRECTORIES true "${boost_SOURCE_DIR}/libs/")
+	foreach(item ${V_GLOB})
+		if(IS_DIRECTORY ${item})
+			include_directories(${item}/include/)
+		endif()
+	endforeach()
 endif()
 
 # Compile C++ code from signed-heat-3d
