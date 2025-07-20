@@ -111,9 +111,10 @@ if(NOT Boost_FOUND)
 	include_directories(${boost_SOURCE_DIR}/libs/config/include/)
 	include_directories(${boost_SOURCE_DIR}/libs/optional/include/)
 	include_directories(${boost_SOURCE_DIR}/libs/throw_exception/include/)
+	include_directories(${boost_SOURCE_DIR}/libs/assert/include/)
 
 	# amgcl really only needs property_tree, but in Boost every file is seemingly included by every other file :((
-	file(GLOB V_GLOB LIST_DIRECTORIES true ${boost_SOURCE_DIR}/libs/)
+	file(GLOB V_GLOB LIST_DIRECTORIES true ${boost_SOURCE_DIR}/libs/*)
 	message("V_GLOB: ${V_GLOB}")
 	foreach(item ${V_GLOB})
 		if(IS_DIRECTORY ${item})
