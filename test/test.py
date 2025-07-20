@@ -126,6 +126,7 @@ def test_read_point_cloud() -> None:
 
 class TestTetSolver:
 	def test_get_vertices(self) -> None:
+		print('CHECK')
 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
 		solve_options = {'rebuild': True}
