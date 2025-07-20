@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 project(shm3d_bindings)
 
-# Copied from signed-heat-3d (and hence gc-polyscope-project-template)
+# Adapted from signed-heat-3d (and hence gc-polyscope-project-template)
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
   # using Clang (linux or apple) or GCC
@@ -39,6 +39,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
   message("Using Visual Studio compiler flags")
   set(BASE_CXX_FLAGS "${BASE_CXX_FLAGS} /W4")
   set(BASE_CXX_FLAGS "${BASE_CXX_FLAGS} /MP") # parallel build
+  set(BASE_CXX_FLAGS "${BASE_CXX_FLAGS} /EHsc") # use C++ exception handling
   SET(DISABLED_WARNINGS "${DISABLED_WARNINGS} /wd\"4267\"")  # ignore conversion to smaller type (fires more aggressively than the gcc version, which is annoying)
   SET(DISABLED_WARNINGS "${DISABLED_WARNINGS} /wd\"4244\"")  # ignore conversion to smaller type (fires more aggressively than the gcc version, which is annoying)
   SET(DISABLED_WARNINGS "${DISABLED_WARNINGS} /wd\"4305\"")  # ignore truncation on initialization
@@ -84,9 +85,6 @@ include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-
 add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
 
 # Make sure we have Boost (for AMGCL)
-#if(POLICY CMP0167)
-#  cmake_policy(SET CMP0167 NEW) # OLD
-#endif()
 find_package(Boost)
 if(NOT Boost_FOUND)
 	message("Boost not found")
@@ -102,23 +100,11 @@ if(NOT Boost_FOUND)
 	  GIT_SHALLOW TRUE
 	)
 	FetchContent_MakeAvailable(Boost)
-	#find_package(Boost 1.73.0 REQUIRED COMPONENTS property_tree)
-	#message("Boost libraries: ${Boost_LIBRARIES}")
-	#message("Boost include directories: ${Boost_INCLUDE_DIRS}")
-	#include_directories(shm3d_bindings ${Boost_INCLUDE_DIRS})
-
-	include_directories(${boost_SOURCE_DIR}/libs/property_tree/include/)
-	include_directories(${boost_SOURCE_DIR}/libs/config/include/)
-	include_directories(${boost_SOURCE_DIR}/libs/optional/include/)
-	include_directories(${boost_SOURCE_DIR}/libs/throw_exception/include/)
-	include_directories(${boost_SOURCE_DIR}/libs/assert/include/)
 
 	# amgcl really only needs property_tree, but in Boost every file is seemingly included by every other file :((
 	file(GLOB V_GLOB LIST_DIRECTORIES true ${boost_SOURCE_DIR}/libs/*)
-	message("V_GLOB: ${V_GLOB}")
 	foreach(item ${V_GLOB})
 		if(IS_DIRECTORY ${item})
-			message("item: ${item}")
 			include_directories(${item}/include/)
 		endif()
 	endforeach()
