@@ -124,84 +124,84 @@ def test_read_point_cloud() -> None:
 	assert P.shape == N.shape, 'Point and normal arrays should have the same shape.'
 
 
-# class TestTetSolver:
-# 	def test_get_vertices(self) -> None:
-# 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-# 		solver = shm.SignedHeatTetSolver(verbose=False)
-# 		solve_options = {'rebuild': True}
-# 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
-# 		vertices = solver.get_vertices()
-# 		assert len(vertices.shape) == 2, 'Vertex array of tet mesh should be a 2D NumPy array.'
-# 		assert vertices.shape[1] == 3, 'Vertex array of tet mesh should be a _ x 3 NumPy array.'
-# 		assert vertices.shape[0] == len(phi), (
-# 			'SDF should have same length as number of vertices in the tet mesh domain.'
-# 		)
+class TestTetSolver:
+	def test_get_vertices(self) -> None:
+		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		solver = shm.SignedHeatTetSolver(verbose=False)
+		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
+		vertices = solver.get_vertices()
+		assert len(vertices.shape) == 2, 'Vertex array of tet mesh should be a 2D NumPy array.'
+		assert vertices.shape[1] == 3, 'Vertex array of tet mesh should be a _ x 3 NumPy array.'
+		assert vertices.shape[0] == len(phi), (
+			'SDF should have same length as number of vertices in the tet mesh domain.'
+		)
 
-# 	def test_get_tets(self) -> None:
-# 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-# 		solver = shm.SignedHeatTetSolver(verbose=False)
-# 		solve_options = {'rebuild': True}
-# 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
-# 		vertices = solver.get_vertices()
-# 		tets = solver.get_tets()
-# 		assert len(tets.shape) == 2, 'Tet array of tet mesh should be a 2D NumPy array.'
-# 		assert tets.shape[1] == 4, 'Tet array of tet mesh should be a _ x 4 NumPy array.'
-# 		max_elem = np.amax(tets)
-# 		min_elem = np.amin(tets)
-# 		assert max_elem < vertices.shape[0], (
-# 			'There is a tet with an out-of-bounds vertex index. Tets should be zero-based arrays of indices into vertices.'
-# 		)
-# 		assert min_elem >= 0, (
-# 			'There is a tet with a negative vertex index. Tets should be zero-based arrays of indices into vertices.'
-# 		)
+	def test_get_tets(self) -> None:
+		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		solver = shm.SignedHeatTetSolver(verbose=False)
+		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
+		vertices = solver.get_vertices()
+		tets = solver.get_tets()
+		assert len(tets.shape) == 2, 'Tet array of tet mesh should be a 2D NumPy array.'
+		assert tets.shape[1] == 4, 'Tet array of tet mesh should be a _ x 4 NumPy array.'
+		max_elem = np.amax(tets)
+		min_elem = np.amin(tets)
+		assert max_elem < vertices.shape[0], (
+			'There is a tet with an out-of-bounds vertex index. Tets should be zero-based arrays of indices into vertices.'
+		)
+		assert min_elem >= 0, (
+			'There is a tet with a negative vertex index. Tets should be zero-based arrays of indices into vertices.'
+		)
 
-# 	def test_compute_distance_to_mesh(self) -> None:
-# 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-# 		solver = shm.SignedHeatTetSolver(verbose=False)
-# 		solve_options = {'rebuild': True}
-# 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
-# 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
-# 		# Approximate the ground-truth distance, assuming test mesh is closed & perfect.
-# 		N = area_weighted_vertex_normals(V, F)
-# 		# Approximate distance by just using signed distance to vertices (instead of triangle faces.)
-# 		signed_distances = approximate_signed_distance(solver.get_vertices(), V, N)
-# 		span = np.amax(signed_distances) - np.amin(signed_distances)
-# 		assert np.mean((phi - signed_distances) / span) < 2e-2, 'SDF not close to ground-truth.'
+	def test_compute_distance_to_mesh(self) -> None:
+		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		solver = shm.SignedHeatTetSolver(verbose=False)
+		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
+		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
+		# Approximate the ground-truth distance, assuming test mesh is closed & perfect.
+		N = area_weighted_vertex_normals(V, F)
+		# Approximate distance by just using signed distance to vertices (instead of triangle faces.)
+		signed_distances = approximate_signed_distance(solver.get_vertices(), V, N)
+		span = np.amax(signed_distances) - np.amin(signed_distances)
+		assert np.mean((phi - signed_distances) / span) < 2e-2, 'SDF not close to ground-truth.'
 
-# 	def test_compute_distance_to_point_cloud(self) -> None:
-# 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
-# 		solver = shm.SignedHeatTetSolver(verbose=False)
-# 		solve_options = {'rebuild': True}
-# 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
-# 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
-# 		# Make sure distance is close to naive distance
-# 		# Approximate signed distance to point cloud using pseudonormal distance.
-# 		signed_distances = approximate_signed_distance(solver.get_vertices(), P, N)
-# 		span = np.amax(signed_distances) - np.amin(signed_distances)
-# 		residual = (phi - signed_distances) / span
-# 		residual[np.isnan(residual)] = 0.0  # avoid divison by zero
-# 		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
+	def test_compute_distance_to_point_cloud(self) -> None:
+		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
+		solver = shm.SignedHeatTetSolver(verbose=False)
+		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16])}
+		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
+		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
+		# Make sure distance is close to naive distance
+		# Approximate signed distance to point cloud using pseudonormal distance.
+		signed_distances = approximate_signed_distance(solver.get_vertices(), P, N)
+		span = np.amax(signed_distances) - np.amin(signed_distances)
+		residual = (phi - signed_distances) / span
+		residual[np.isnan(residual)] = 0.0  # avoid divison by zero
+		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
 
-# 	def average_squared_distance(
-# 		self, V1: np.ndarray, F1: list[list[int]], V2: np.ndarray, F2: list[list[int]]
-# 	) -> float:
-# 		"""
-# 		Approximate since we'll be using distances to point sets.
-# 		"""
-# 		N1 = area_weighted_vertex_normals(V1, F1)
-# 		N2 = area_weighted_vertex_normals(V2, F2)
-# 		D2_1 = np.square(approximate_signed_distance(V1, V2, N2))
-# 		D2_2 = np.square(approximate_signed_distance(V2, V1, N1))
-# 		return (np.sum(D2_1) + np.sum(D2_2)) / (V1.shape[0] + V2.shape[0])
+	def average_squared_distance(
+		self, V1: np.ndarray, F1: list[list[int]], V2: np.ndarray, F2: list[list[int]]
+	) -> float:
+		"""
+		Approximate since we'll be using distances to point sets.
+		"""
+		N1 = area_weighted_vertex_normals(V1, F1)
+		N2 = area_weighted_vertex_normals(V2, F2)
+		D2_1 = np.square(approximate_signed_distance(V1, V2, N2))
+		D2_2 = np.square(approximate_signed_distance(V2, V1, N1))
+		return (np.sum(D2_1) + np.sum(D2_2)) / (V1.shape[0] + V2.shape[0])
 
-# 	def test_isosurface(self) -> None:
-# 		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-# 		solver = shm.SignedHeatTetSolver(verbose=False)
-# 		solve_options = {'rebuild': True, 'level_set_constraint': 'ZeroSet'}
-# 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
-# 		V_iso, F_iso = solver.isosurface(phi, 0.0)
-# 		error = self.average_squared_distance(V, F, V_iso, F_iso)
-# 		assert error < 1e-2, 'Zero level set is far away from original closed mesh.'
+	def test_isosurface(self) -> None:
+		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		solver = shm.SignedHeatTetSolver(verbose=False)
+		solve_options = {'rebuild': True, 'resolution': np.array([16, 16, 16]), 'level_set_constraint': 'ZeroSet'}
+		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
+		V_iso, F_iso = solver.isosurface(phi, 0.0)
+		error = self.average_squared_distance(V, F, V_iso, F_iso)
+		assert error < 1e-2, 'Zero level set is far away from original closed mesh.'
 
 
 class TestGridSolver:
@@ -211,6 +211,7 @@ class TestGridSolver:
 		solve_options = {'rebuild': True}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		grid_res = solver.get_grid_resolution()
+		print(grid_res)
 		assert len(grid_res) == 3, 'Grid should be 3D.'
 		assert all(res > 0 for res in grid_res), 'Grid should have nonzero length in each dimension.'
 
