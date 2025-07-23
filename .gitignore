@@ -2,6 +2,7 @@
 build/
 build_debug/
 !docs/docs/build/
+!docs/site/build/
 dist/
 *.pyc
 __pycache__/

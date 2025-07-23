@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://nzfeng.github.io/signed-heat-python/</loc>
+         <lastmod>2025-07-23</lastmod>
+    </url>
+    <url>
+         <loc>https://nzfeng.github.io/signed-heat-python/algorithm/solvers/</loc>
+         <lastmod>2025-07-23</lastmod>
+    </url>
+    <url>
+         <loc>https://nzfeng.github.io/signed-heat-python/build/building/</loc>
+         <lastmod>2025-07-23</lastmod>
+    </url>
+    <url>
+         <loc>https://nzfeng.github.io/signed-heat-python/build/tests/</loc>
+         <lastmod>2025-07-23</lastmod>
+    </url>
+</urlset>

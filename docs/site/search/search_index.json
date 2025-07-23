@@ -1,0 +1,68 @@
+{
+  "config": {
+    "lang": [
+      "en"
+    ],
+    "separator": "[\\s\\-]+",
+    "pipeline": [
+      "stopWordFilter"
+    ]
+  },
+  "docs": [
+    {
+      "location": "",
+      "title": "Signed Heat Method (Python)",
+      "text": "<p><code>signed_heat_method</code> is a Python library implementing the Signed Heat Method for computing robust signed distance fields (SDFs) to triangle meshes, polygon meshes, and point clouds in 3D. This library consists of Python bindings to C++ code.</p> <p>Install <code>signed_heat_method</code> via PyPI: <pre><code>pip install signed_heat_method\n</code></pre></p> <p>Sample:</p> <p></p> <pre><code>import signed_heat_method as shm\n\nV, F = # your mesh, specified as a vertex and face array\n\n# Initalize tet mesh solver\ntet_solver = shm.SignedHeatTetSolver(verbose=True) # print all messages\n\n# Solve!\nsdf_tets = tet_solver.compute_distance_to_mesh(V, F)\n\n# Solve on a regular grid instead.\ngrid_solver = shm.SignedHeatGridSolver(verbose=True)\nsdf_grid = grid_solver.compute_distance_to_mesh(V, F)\n</code></pre> <p>For a demo, see the sample project, which uses Polyscope for visualization.</p> <p>More info about the method, including a blog-style summary, an introductory 10-minute talk, and the corresponding academic paper are all located at the project page here.</p> <p>Related libraries</p> <p>The Signed Heat Method has been implemented in both C++ and Python, in 2D and in 3D.</p> <ul> <li>If you\u2019re interested in using the Signed Heat Method on 2D surface domains, rather than in 3D space, the method has been implemented in geometry-central for triangle mesh domains, polygon mesh domains, and point cloud domains. A demo project exists at signed-heat-demo.</li> <li>Likewise, Python bindings to the geometry-central C++ code has been implemented in the Python package potpourri3d.</li> </ul> <p>Credits</p> <p><code>signed_heat_method</code> is developed by Nicole Feng, with advice from Alex Kaszynski and Nicholas Sharp.</p> <p>If this code contributes to an academic publication, cite it as: <pre><code>@article{Feng:2024:SHM,\n    author = {Feng, Nicole and Crane, Keenan},\n    title = {A Heat Method for Generalized Signed Distance},\n    year = {2024},\n    issue_date = {August 2024},\n    publisher = {Association for Computing Machinery},\n    address = {New York, NY, USA},\n    volume = {43},\n    number = {4},\n    issn = {0730-0301},\n    url = {https://doi.org/10.1145/3658220},\n    doi = {10.1145/3658220},\n    journal = {ACM Trans. Graph.},\n    month = {jul},\n    articleno = {92},\n    numpages = {16}\n}\n</code></pre></p>"
+    },
+    {
+      "location": "algorithm/solvers/",
+      "title": "Solvers",
+      "text": "<p>There are two solvers: <code>SignedHeatTetSolver</code> solves for SDFs on a tetrahedralized domain, and  <code>SignedHeatGridSolver</code> solves for SDFs on gridded domain. Both solvers assume the domain is rectangular, though future releases may consider arbitrary domains.</p> <code>SignedHeatTetSolver(verbose: bool = True)</code> <p>Construct an SDF solver that acts on a tet-meshed domain.</p> <ul> <li><code>verbose</code>: If <code>True</code>, print status updates during solves.</li> </ul> <code>SignedHeatGridSolver(verbose: bool = True)</code> <p>Construct an SDF solver that acts on a gridded domain.</p> <ul> <li><code>verbose</code>: If <code>True</code>, print status updates during solves.</li> </ul> <p>To improve performance, operators and spatial discretizations are only built as necessary, and re-used in future computations if the underlying discretization hasn\u2019t changed. This means future computations can be significantly faster than the initial solve (which includes, for example, tet mesh construction and matrix factorization.)</p>"
+    },
+    {
+      "location": "algorithm/solvers/#signed-distance-to-triangle-and-polygon-meshes",
+      "title": "Signed distance to triangle and polygon meshes",
+      "text": "<p>Example: <pre><code>import signed_heat_method as shm\n\nV, F = # your mesh\n\n# Initalize tet mesh solver\ntet_solver = shm.SignedHeatTetSolver(verbose=True) # print all messages\n\n# Solve!\nsdf_tets = tet_solver.compute_distance_to_mesh(V, F)\n\n# Solve on a regular grid instead.\ngrid_solver = shm.SignedHeatGridSolver(verbose=True)\nsdf_grid = grid_solver.compute_distance_to_mesh(V, F)\n</code></pre></p> <code>SignedHeatTetSolver.compute_distance_to_mesh(V: np.ndarray, F: list[list[int]], options: dict = {}) -&gt; np.ndarray</code> <p>Solve for an SDF on a tet mesh, to the mesh represented by the vertex array <code>V</code> and face array <code>F</code>.</p> <ul> <li><code>V</code> is a (n_vertices, 3) NumPy array of 3D vertex positions, where the i-th row gives the 3D position of the i-th vertex.</li> <li><code>F</code> is a list of lists; each sublist represents a polygonal mesh face of arbitrary degree, using 0-indexed vertices.</li> </ul> <code>SignedHeatGridSolver.compute_distance_to_mesh(V: np.ndarray, F: list[list[int]], options: dict = {}) -&gt; np.ndarray</code> <p>Solve for an SDF on a tet mesh, to the mesh represented by the vertex array <code>V</code> and face array <code>F</code>.</p> <ul> <li><code>V</code> is a (n_vertices, 3) NumPy array of 3D vertex positions, where the i-th row gives the 3D position of the i-th vertex.</li> <li><code>F</code> is a list of lists; each sublist represents a polygonal mesh face of arbitrary degree, using 0-indexed vertices.</li> </ul> <p>Both <code>compute_distance_to_mesh()</code> functions take an optional argument called <code>options</code>, which is a dictionary with the following possible entries:</p> Field Default value Meaning <code>level_set_constraint</code> <code>\"ZeroSet\"</code> Whether to apply level set constraints, with options \u201cZeroSet\u201d, \u201cNone\u201d, \u201cMultiple\u201d, corresponding to preservation of the input surface as the zero set, as multiple level sets (one for each surface component), or no constraints, respectively. <code>t_coef</code> <code>1</code> Sets the time used for short-time heat flow. Generally you don\u2019t have to change this. <code>bbox_min</code> The 3D position of the minimum corner of the computational domain, which is assumed to be an axis-aligned rectangular prism. If not specified, the size of the domain will be automatically computed so as to encompass the input source geometry. <code>bbox_max</code> The 3D position of the maximum corner of the computational domain. <code>resolution</code> <code>np.array([2**5, 2**5, 2**5])</code> 3D vector specifying the tet or grid spacing, with larger values indicating more refinement. If solving on a grid, this corresponds to the number of nodes along each dimension. Default values are 2^{5}. <code>rebuild</code> <code>True</code> If <code>True</code>, (re)build the underlying tet mesh or grid domain. This will induce the solver to re-factorize the matrices involved in the solve."
+    },
+    {
+      "location": "algorithm/solvers/#signed-distance-to-point-clouds",
+      "title": "Signed distance to point clouds",
+      "text": "<p>Example: <pre><code>import signed_heat_method as shm\n\nP, N = # your point cloud, with normals\n\n# Initalize tet mesh solver\ntet_solver = shm.SignedHeatTetSolver(verbose=True) # print all messages\n\n# Solve!\nsdf_tets = tet_solver.compute_distance_to_point_cloud(P, N)\n\n# Solve on a regular grid instead.\ngrid_solver = shm.SignedHeatGridSolver(verbose=True)\nsdf_grid = grid_solver.compute_distance_to_point_cloud(P, N)\n</code></pre></p> <code>SignedHeatTetSolver.compute_distance_to_mesh(P: np.ndarray, N: np.ndarray, options: dict = {}) -&gt; np.ndarray</code> <p>Solve for an SDF on a tet mesh, to the point cloud represented by the point positions array <code>P</code> and point normals <code>N</code>.</p> <ul> <li><code>P</code> is a (n_points, 3) NumPy array of 3D point positions, where the i-th row gives the 3D position of the i-th point.</li> <li><code>N</code> is a (n_points, 3) NumPy array of 3D normal vectors, where |P| = number of points in the source point cloud.</li> </ul> <code>SignedHeatGridSolver.compute_distance_to_mesh(P: np.ndarray, N: np.ndarray, options: dict = {}) -&gt; np.ndarray</code> <p>Solve for an SDF on a grid, to the point cloud represented by the point positions array <code>P</code> and point normals <code>N</code>.</p> <ul> <li><code>P</code> is a (n_points, 3) NumPy array of 3D point positions, where the i-th row gives the 3D position of the i-th point.</li> <li><code>N</code> is a (n_points, 3) NumPy array of 3D normal vectors, where |P| = number of points in the source point cloud.</li> </ul> <p>Both <code>compute_distance_to_mesh()</code> functions take an optional argument called <code>options</code>, which is a dictionary with the following possible entries:</p> Field Default value Meaning <code>t_coef</code> <code>1</code> Sets the time used for short-time heat flow. Generally you don\u2019t have to change this. <code>bbox_min</code> The 3D position of the minimum corner of the computational domain, which is assumed to be an axis-aligned rectangular prism. If not specified, the size of the domain will be automatically computed so as to encompass the input source geometry. <code>bbox_max</code> The 3D position of the maximum corner of the computational domain. <code>resolution</code> <code>np.array([2**5, 2**5, 2**5])</code> 3D vector specifying the tet or grid spacing, with larger values indicating more refinement. If solving on a grid, this corresponds to the number of nodes along each dimension. Default values are 2^{5}. <code>rebuild</code> <code>True</code> If <code>True</code>, (re)build the underlying tet mesh or grid domain. This will induce the solver to re-factorize the matrices involved in the solve."
+    },
+    {
+      "location": "algorithm/solvers/#helper-functions",
+      "title": "Helper functions",
+      "text": ""
+    },
+    {
+      "location": "algorithm/solvers/#tet-mesh-solver",
+      "title": "Tet mesh solver",
+      "text": "<code>SignedHeatTetSolver.get_vertices() -&gt; np.ndarray</code> <p>Returns an (n_vertices, 3) NumPy array representing the vertex locations of the underlying tet mesh domain.</p> <code>SignedHeatTetSolver.get_tets() -&gt; np.ndarray</code> <p>Returns an (n_tets, 4) NumPy array representing the tetrahedra of the underlying tet mesh domain, where each tetrahedra is given by four vertex indices (0-indexed).</p> <code>SignedHeatTetSolver.isosurface(f: np.ndarray, isovalue: float = 0.) -&gt; tuple[np.ndarray, list[list[int]]]</code> <p>Contours a scalar function defined on the tet mesh, given by the input vector <code>f</code>, according to the isovalue <code>isovalue</code>. Returns the tuple <code>(vertices, faces)</code> defining the polygon mesh of the resulting isosurface.</p>"
+    },
+    {
+      "location": "algorithm/solvers/#grid-solver",
+      "title": "Grid solver",
+      "text": "<code>SignedHeatGridSolver.get_grid_resolution() -&gt; list[int]</code> <p>Returns a length-3 array giving the number of cells of the background grid along the x-, y-, and z-axes, respectively.</p> <code>SignedHeatGridSolver.get_bbox() -&gt; tuple[np.ndarray, np.ndarray]</code> <p>Returns the tuple <code>(bbox_min, bbox_min)</code>, where <code>bbox_min</code> and <code>bbox_min</code> are the 3D positions of the minimal and maximal node corners of the grid, respectively.</p> <code>SignedHeatGridSolver.to_grid_array(f: np.ndarray) -&gt; np.ndarray</code> <p>Converts the input vector <code>f</code> representing a scalar function on the background grid, into a NumPy array of shape <code>(dim_x, dim_y, dim_z)</code>, where <code>dim_[xyz]</code> gives the number of grid nodes along each axis.</p>"
+    },
+    {
+      "location": "build/building/",
+      "title": "Building",
+      "text": "<p>The recommended way to install <code>signed_heat_method</code> is via PyPI:</p> <p><pre><code>pip install signed_heat_method\n</code></pre> You can also clone the repository and install it from source: <pre><code>git clone --recursive https://github.com/nzfeng/signed-heat-python.git\ncd signed-heat-python\ngit submodule update --init --recursive\npip install .\n</code></pre> If you do not clone recursively, some submodules or sub-submodules will not clone. Initialize/update these submodules by running <code>git submodule update --init --recursive</code> or <code>git submodule update --recursive</code>.</p>"
+    },
+    {
+      "location": "build/building/#example",
+      "title": "Example",
+      "text": "<p>For a simple example project using Polyscope for visualization, see the sample Python project here.</p>"
+    },
+    {
+      "location": "build/tests/",
+      "title": "Tests",
+      "text": ""
+    },
+    {
+      "location": "build/tests/#running-tests",
+      "title": "Running tests",
+      "text": "<p>All tests are stored in the <code>test/</code> subdirectory, which also contains a few small input files. We use pytest as a testing framework, which can be installed via <code>pip install pytest</code>.</p> <p>Run the tests with: <pre><code>pytest test.py [-q] [-v]\n</code></pre> where <code>-v</code>, <code>-q</code> are optional flags that increase/decrease verbosity.</p>"
+    }
+  ]
+}

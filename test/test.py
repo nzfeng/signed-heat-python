@@ -117,7 +117,7 @@ def test_write_surface_mesh() -> None:
 
 
 def test_read_point_cloud() -> None:
-	P, N = pp3d.read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
+	P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 	assert len(P.shape) == 2, 'Point array should be a 2D NumPy array.'
 	assert P.shape[1] == 3, 'Point array should be a _ x 3 NumPy array.'
 	assert len(N.shape) == 2, 'Point normal array should be a 2D NumPy array.'
@@ -255,7 +255,7 @@ class TestGridSolver:
 		assert np.mean((phi - signed_distances) / span) < 2e-2, 'SDF not close to ground-truth.'
 
 	def test_compute_distance_to_point_cloud(self) -> None:
-		P, N = pp3d.read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
+		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 		solver = shm.SignedHeatGridSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)

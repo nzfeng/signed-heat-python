@@ -40,6 +40,9 @@ extra:
 repo_name: nzfeng/signed-heat-python
 repo_url: https://github.com/nzfeng/signed-heat-python
 
+extra_javascript:
+- https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML
+
 nav:
 - Home: index.md
 - Building:
