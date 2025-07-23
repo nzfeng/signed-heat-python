@@ -36,41 +36,11 @@ This project has the following submodules, which should have been installed in t
 * [nanobind](https://nanobind.readthedocs.io/en/latest/)
 * [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d)
 
-You may need to install Boost since `signed-heat-3d` depends on [`amgcl`](https://github.com/ddemidov/amgcl), which depends on Boost (`brew install boost` on macOS).
-
-The demo program at `test/demo.py` uses the following Python libraries, which can each be installed via `pip install`:
-* [NumPy](https://numpy.org/)
-* [polyscope](https://polyscope.run/py/)
-* [mypy](https://www.mypy-lang.org/) (assuming Python 3.8+)
-
-## Getting started
-
-Documentation is [below](#documentation). This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. To run the demo program, pip-install the package using the instructions described [above](#installation).
-
-Then `cd` into the top level of the directory, and run
-```
-
-python3 test/demo.py path/to/mesh/or/pointcloud
-```
+You may need to install Boost since `signed-heat-3d` depends on [`amgcl`](https://github.com/ddemidov/amgcl), which depends on Boost. Boost can be installed on macOS using `brew install boost`, and on Ubuntu usually using something like `sudo apt-get install libboost-dev`; Windows users should probably follow the instructions on the [Boost website](https://www.boost.org/releases/latest/).
 
 ## Documentation
 
-### Input / Output
-
-For simplicity, input / output mesh files are assumed to be OBJ format, though this could be amended with an extra Python binding to [geometry-central](https://geometry-central.net/)'s IO functions.
-
-Point clouds are currently assumed to have file extension `.pc` and consist of newline-separated 3D point positions (denoted by leading char `v`) and point normal vectors (denoted by leading char `vn`).
-
-### Command line arguments
-
-In addition to the mesh file, you can pass several flags.
-
-|flag | purpose|
-| ------------- |-------------|
-|`--g`, `--grid`| Solve on a background grid. By default, the domain will be discretized as a tet mesh. |
-|`--v`, `--verbose`| Verbose output. Off by default.|
-|`--s`| Controls the tet/grid spacing proportional to $2^{-h}$, with larger values indicating more refinement. Default value is 0.|
-|`--l`, `--headless`| Don't use the GUI, and automatically solve for & export the generalized SDF.|
+Documentation is briefly summarized in this README, and full documentation lives [here]().
 
 To improve performance, operators and spatial discretizations are only built as necessary, and re-used in future computations if the underlying discretization hasn't changed. This means future computations can be significantly faster than the initial solve (which includes, for example, tet mesh construction and matrix factorization.)
 
@@ -145,13 +115,40 @@ sdf_grid = grid_solver.compute_distance_to_point_cloud(P, N)
 
 - `SignedHeatGridSolver.get_grid_resolution()` returns a length-3 array giving the number of cells of the background grid along the x-, y-, and z-axes, respectively.
 - `SignedHeatGridSolver.get_bbox()` returns the tuple `(bbox_min, bbox_min)`, where `bbox_min` and `bbox_min` are the 3D positions of the minimal/maximal node corners of the grid.
-- `SignedHeatGridSolver.to_grid_array(f, isovalue)`  converts the input vector `f` representing a scalar function on the background grid, into a NumPy array of shape `(dim_x, dim_y, dim_z)`, where `dim_[xyz]` gives the number of grid nodes along each axis.
+- `SignedHeatGridSolver.to_grid_array(f)`  converts the input vector `f` representing a scalar function on the background grid, into a NumPy array of shape `(dim_x, dim_y, dim_z)`, where `dim_[xyz]` gives the number of grid nodes along each axis.
+
+## Demo program
+
+This repository also contains a demo Python program at `test/demo.py`, using [Polyscope](https://github.com/nmwsharp/polyscope-py) for visualization. The demo program at `test/demo.py` uses the following Python libraries, which can each be installed via `pip install`:
+* [NumPy](https://numpy.org/)
+* [polyscope](https://polyscope.run/py/)
+<!-- * [mypy](https://www.mypy-lang.org/) (assuming Python 3.8+) -->
+To run the demo program, pip-install the package using the instructions described [above](#installation). Then `cd` into the top level of the directory, and run
+```
+
+python3 test/demo.py path/to/mesh/or/pointcloud
+```
+
+### Input / Output
+
+Input / output meshes can be any one of the following [types](https://geometry-central.net/surface/utilities/io/) ("Supported file types"), including OBJ, PLY, STL, and OFF.
+
+Point clouds are currently assumed to have file extension `.pc` and consist of newline-separated 3D point positions (denoted by leading char `v`) and point normal vectors (denoted by leading char `vn`).
+
+### Command line arguments
+
+In addition to the mesh file, you can pass several flags.
+
+|flag | purpose|
+| ------------- |-------------|
+|`--g`, `--grid`| Solve on a background grid. By default, the domain will be discretized as a tet mesh. |
+|`--v`, `--verbose`| Verbose output. Off by default.|
+|`--s`| Controls the tet/grid spacing proportional to $2^{-h}$, with larger values indicating more refinement. Default value is 0.|
+|`--l`, `--headless`| Don't use the GUI, and automatically solve for & export the generalized SDF.|
 
 ## TODOs
 
-* Testing, CI
-* Python package release
-* Contouring much slower than in [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d), because data is being passed by value with each call to the Python-bound functions
+* Contouring slower than in [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d), because data is being passed by value with each call to the Python-bound functions
 * More precise level set constraints for grid solves
 * Isoline rendering for volume meshes is [not yet bound in Polyscope](https://github.com/nmwsharp/polyscope-py/issues/36); for now, SDFs can be rendered with isobands via the GUI only.
 * Handle more input file formats, via extra Python bindings to [geometry-central](https://geometry-central.net/)'s IO functions.

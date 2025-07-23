@@ -2,15 +2,12 @@ import os
 import argparse
 import numpy as np
 import time
+import potpourri3d as pp3d
 
 import polyscope as ps
 import polyscope.imgui as psim
 
 from mesh_io import *
-
-# # Path to where the bindings live
-# sys.path.append(os.path.join(os.path.dirname(__file__), '../build/'))
-# sys.path.append(os.path.join(os.path.dirname(__file__), '../src/'))
 
 import signed_heat_method as shm
 
@@ -235,7 +232,7 @@ def main() -> None:
 	)
 
 	if ext != '.pc':
-		demo_solver.vertices, demo_solver.faces = read_polygon_mesh(args.input)
+		demo_solver.vertices, demo_solver.faces = pp3d.read_polygon_mesh(args.input)
 	else:
 		demo_solver.points, demo_solver.point_normals = read_point_cloud(args.input)
 

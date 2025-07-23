@@ -44,7 +44,7 @@ jobs:
         python-version: '3.9'
 
     - name: Install required Python packages
-      run: python3 -m pip install numpy mypy pytest
+      run: python3 -m pip install numpy potpourri3d mypy pytest
 
     - name: Install
       run: |

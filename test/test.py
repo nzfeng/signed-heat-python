@@ -1,6 +1,7 @@
 import os
 import sys
 import numpy as np
+import potpourri3d as pp3d
 
 from mesh_io import *
 
@@ -83,7 +84,7 @@ def grid_node_positions(nx: int, ny: int, nz: int, bbox_min: np.ndarray, bbox_ma
 
 
 def test_read_polygon_mesh() -> None:
-	V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+	V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 	assert len(V.shape) == 2, 'Vertex array should be a 2D NumPy array.'
 	assert V.shape[1] == 3, 'Vertex array should be a _ x 3 NumPy array.'
 	assert all(len(polygon) == 3 for polygon in F), 'bunny_small should be a triangle mesh.'
@@ -92,7 +93,7 @@ def test_read_polygon_mesh() -> None:
 		'There is a face with an out-of-bounds vertex index. Faces should be zero-based arrays of indices into vertices.'
 	)
 
-	V, F = read_polygon_mesh(os.path.join(asset_path, 'spot.obj'))
+	V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'spot.obj'))
 	assert len(V.shape) == 2, 'Vertex array should be a 2D NumPy array.'
 	assert V.shape[1] == 3, 'Vertex array should be a _ x 3 NumPy array.'
 	assert all(len(polygon) == 4 for polygon in F), 'spot should be a quad mesh.'
@@ -107,7 +108,7 @@ def test_read_polygon_mesh() -> None:
 
 
 def test_write_surface_mesh() -> None:
-	V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+	V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 	out_filepath = os.path.join(asset_path, 'test_mesh.obj')
 	write_surface_mesh(V, F, out_filepath)
 	V_new, F_new = read_polygon_mesh(os.path.join(asset_path, 'test_mesh.obj'))
@@ -116,7 +117,7 @@ def test_write_surface_mesh() -> None:
 
 
 def test_read_point_cloud() -> None:
-	P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
+	P, N = pp3d.read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 	assert len(P.shape) == 2, 'Point array should be a 2D NumPy array.'
 	assert P.shape[1] == 3, 'Point array should be a _ x 3 NumPy array.'
 	assert len(N.shape) == 2, 'Point normal array should be a 2D NumPy array.'
@@ -130,7 +131,7 @@ class TestTetSolver:
 	"""
 
 	def test_get_vertices(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -142,7 +143,7 @@ class TestTetSolver:
 		)
 
 	def test_get_tets(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -160,7 +161,7 @@ class TestTetSolver:
 		)
 
 	def test_compute_distance_to_mesh(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -199,7 +200,7 @@ class TestTetSolver:
 		return (np.sum(D2_1) + np.sum(D2_2)) / (V1.shape[0] + V2.shape[0])
 
 	def test_isosurface(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2]), 'level_set_constraint': 'ZeroSet'}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -210,7 +211,7 @@ class TestTetSolver:
 
 class TestGridSolver:
 	def test_get_grid_resolution(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatGridSolver(verbose=False)
 		solve_options = {'rebuild': True}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -220,7 +221,7 @@ class TestGridSolver:
 		assert all(res > 0 for res in grid_res), 'Grid should have nonzero length in each dimension.'
 
 	def test_get_bbox(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatGridSolver(verbose=False)
 		solve_options = {'rebuild': True}
 		phi = solver.compute_distance_to_mesh(V, F, options=solve_options)
@@ -231,7 +232,7 @@ class TestGridSolver:
 		)
 
 	def test_to_grid_array(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatGridSolver(verbose=False)
 		solve_options = {'rebuild': True}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -239,7 +240,7 @@ class TestGridSolver:
 		assert len(phi_grid.shape) == 3, 'SDF on grid should be a 3D NumPy array.'
 
 	def test_compute_distance_to_mesh(self) -> None:
-		V, F = read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
+		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatGridSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
@@ -254,7 +255,7 @@ class TestGridSolver:
 		assert np.mean((phi - signed_distances) / span) < 2e-2, 'SDF not close to ground-truth.'
 
 	def test_compute_distance_to_point_cloud(self) -> None:
-		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
+		P, N = pp3d.read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 		solver = shm.SignedHeatGridSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
