@@ -19,6 +19,7 @@ asset_path = os.path.abspath(os.path.dirname(__file__))
 
 import signed_heat_method as shm
 
+print(platform.system)
 TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'Linux' else np.array([2, 2, 2])
 
 
