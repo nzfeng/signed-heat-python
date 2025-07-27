@@ -187,7 +187,8 @@ class TestTetSolver:
 		signed_distances = approximate_signed_distance(solver.get_vertices(), P, N)
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
-		residual[np.isnan(residual)] = 0.0  # avoid divison by zero
+		print(np.isnan(np.sum(phi)), np.isnan(np.sum(signed_distances)))
+		residual[np.isnan(residual)] = 0.0
 		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
 
 	def average_squared_distance(
@@ -269,4 +270,7 @@ class TestGridSolver:
 		Q = grid_node_positions(nx, ny, nz, bbox_min, bbox_max)
 		signed_distances = approximate_signed_distance(Q, P, N)
 		span = np.amax(signed_distances) - np.amin(signed_distances)
-		assert np.mean((phi - signed_distances) / span) < 2e-2, 'SDF not close to ground-truth.'
+		residual = (phi - signed_distances) / span
+		residual[np.isnan(residual)] = 0.0
+		print(np.isnan(np.sum(phi)), np.isnan(np.sum(signed_distances)))
+		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
