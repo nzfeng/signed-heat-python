@@ -20,6 +20,7 @@ asset_path = os.path.abspath(os.path.dirname(__file__))
 import signed_heat_method as shm
 
 TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'linux' else np.array([2, 2, 2])
+print(TET_RESOLUTION)
 
 
 def area_weighted_vertex_normals(V: np.ndarray, F: list[list[int]]) -> np.ndarray:
@@ -185,10 +186,9 @@ class TestTetSolver:
 		# Make sure distance is close to naive distance
 		# Approximate signed distance to point cloud using pseudonormal distance.
 		signed_distances = approximate_signed_distance(solver.get_vertices(), P, N)
+		signed_distances[np.isnan(signed_distances)] = 0.0
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
-		print(np.isnan(np.sum(phi)), np.isnan(np.sum(signed_distances)))
-		residual[np.isnan(residual)] = 0.0
 		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
 
 	def average_squared_distance(
@@ -269,8 +269,7 @@ class TestGridSolver:
 		bbox_min, bbox_max = solver.get_bbox()
 		Q = grid_node_positions(nx, ny, nz, bbox_min, bbox_max)
 		signed_distances = approximate_signed_distance(Q, P, N)
+		signed_distances[np.isnan(signed_distances)] = 0.0
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
-		residual[np.isnan(residual)] = 0.0
-		print(np.isnan(np.sum(phi)), np.isnan(np.sum(signed_distances)))
 		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
