@@ -19,8 +19,7 @@ asset_path = os.path.abspath(os.path.dirname(__file__))
 
 import signed_heat_method as shm
 
-print(platform.system)
-TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'Linux' else np.array([2, 2, 2])
+TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'linux' else np.array([2, 2, 2])
 
 
 def area_weighted_vertex_normals(V: np.ndarray, F: list[list[int]]) -> np.ndarray:
