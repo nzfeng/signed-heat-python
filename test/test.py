@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 import potpourri3d as pp3d
+import platform
 
 from mesh_io import *
 
@@ -17,6 +18,8 @@ else:
 asset_path = os.path.abspath(os.path.dirname(__file__))
 
 import signed_heat_method as shm
+
+TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'Linux' else np.array([2, 2, 2])
 
 
 def area_weighted_vertex_normals(V: np.ndarray, F: list[list[int]]) -> np.ndarray:
@@ -133,7 +136,7 @@ class TestTetSolver:
 	def test_get_vertices(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
+		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		vertices = solver.get_vertices()
 		assert len(vertices.shape) == 2, 'Vertex array of tet mesh should be a 2D NumPy array.'
@@ -145,7 +148,7 @@ class TestTetSolver:
 	def test_get_tets(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
+		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		vertices = solver.get_vertices()
 		tets = solver.get_tets()
@@ -163,7 +166,7 @@ class TestTetSolver:
 	def test_compute_distance_to_mesh(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
+		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Approximate the ground-truth distance, assuming test mesh is closed & perfect.
@@ -176,7 +179,7 @@ class TestTetSolver:
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2])}
+		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Make sure distance is close to naive distance
@@ -202,7 +205,7 @@ class TestTetSolver:
 	def test_isosurface(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': np.array([2, 2, 2]), 'level_set_constraint': 'ZeroSet'}
+		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION, 'level_set_constraint': 'ZeroSet'}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		V_iso, F_iso = solver.isosurface(phi, 0.0)
 		error = self.average_squared_distance(V, F, V_iso, F_iso)
