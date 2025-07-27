@@ -20,7 +20,6 @@ asset_path = os.path.abspath(os.path.dirname(__file__))
 import signed_heat_method as shm
 
 TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'linux' else np.array([2, 2, 2])
-print(TET_RESOLUTION)
 
 
 def area_weighted_vertex_normals(V: np.ndarray, F: list[list[int]]) -> np.ndarray:
@@ -135,6 +134,7 @@ class TestTetSolver:
 	"""
 
 	def test_get_vertices(self) -> None:
+		print(TET_RESOLUTION)
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=False)
 		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
