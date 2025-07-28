@@ -20,7 +20,6 @@ asset_path = os.path.abspath(os.path.dirname(__file__))
 import signed_heat_method as shm
 
 TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'linux' else np.array([2, 2, 2])
-print(TET_RESOLUTION)
 
 
 def area_weighted_vertex_normals(V: np.ndarray, F: list[list[int]]) -> np.ndarray:
@@ -166,7 +165,7 @@ class TestTetSolver:
 
 	def test_compute_distance_to_mesh(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatTetSolver(verbose=False)
+		solver = shm.SignedHeatTetSolver(verbose=True)
 		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
@@ -181,7 +180,7 @@ class TestTetSolver:
 
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
-		solver = shm.SignedHeatTetSolver(verbose=False)
+		solver = shm.SignedHeatTetSolver(verbose=True)
 		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
@@ -248,7 +247,7 @@ class TestGridSolver:
 
 	def test_compute_distance_to_mesh(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatGridSolver(verbose=False)
+		solver = shm.SignedHeatGridSolver(verbose=True)
 		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
@@ -265,7 +264,7 @@ class TestGridSolver:
 
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
-		solver = shm.SignedHeatGridSolver(verbose=False)
+		solver = shm.SignedHeatGridSolver(verbose=True)
 		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
