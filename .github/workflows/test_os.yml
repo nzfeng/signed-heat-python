@@ -36,7 +36,7 @@ jobs:
     - if: runner.os == 'Linux'
       run: |
         sudo apt-get -y update
-        sudo apt-get -y install libboost-dev
+        sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libboost-serialization-dev
 
     - uses: actions/setup-python@v5
       name: Install Python
