@@ -28,7 +28,6 @@ class SignedHeatTetSolver:
 			options.get('bbox_min', np.array([1.0, 1.0, 1.0])),
 			options.get('bbox_max', np.array([-1.0, -1.0, -1.0])),
 			options.get('resolution', np.array([0, 0, 0])),
-			options.get('rebuild', True),
 		)
 
 	def compute_distance_to_point_cloud(self, P: np.ndarray, N: np.ndarray, options: dict = {}) -> np.ndarray:
@@ -40,7 +39,6 @@ class SignedHeatTetSolver:
 			options.get('bbox_min', np.array([1.0, 1.0, 1.0])),
 			options.get('bbox_max', np.array([-1.0, -1.0, -1.0])),
 			options.get('resolution', np.array([0, 0, 0])),
-			options.get('rebuild', True),
 		)
 
 	def isosurface(self, phi: np.ndarray, isoval: float = 0.0) -> tuple[np.ndarray, list[list[int]]]:
@@ -76,7 +74,6 @@ class SignedHeatGridSolver:
 			options.get('bbox_min', np.array([1.0, 1.0, 1.0])),
 			options.get('bbox_max', np.array([-1.0, -1.0, -1.0])),
 			options.get('resolution', np.array([0, 0, 0])),
-			options.get('rebuild', True),
 		)
 
 	def compute_distance_to_point_cloud(
@@ -89,5 +86,4 @@ class SignedHeatGridSolver:
 			options.get('bbox_min', np.array([1.0, 1.0, 1.0])),
 			options.get('bbox_max', np.array([-1.0, -1.0, -1.0])),
 			options.get('resolution', np.array([0, 0, 0])),
-			options.get('rebuild', True),
 		)

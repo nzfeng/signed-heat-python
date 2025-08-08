@@ -32,7 +32,6 @@ class DemoSolver:
 
 		self.solve_options = {
 			'level_set_constraint': 'ZeroSet',
-			'rebuild': True,
 			't_coef': 1.0,
 			'bbox_min': bbox_min,
 			'bbox_max': bbox_max,
@@ -74,8 +73,6 @@ class DemoSolver:
 
 	def solve(self) -> None:
 		cmap = 'viridis'
-		if self.mesh_mode != self.last_solver_mode:
-			self.solve_options['rebuild'] = True
 		if self.mesh_mode == 'tet':
 			if self.solve_options['verbose']:
 				print('\nSolving on tet mesh...')
@@ -92,12 +89,11 @@ class DemoSolver:
 			if self.solve_options['verbose']:
 				print('Solve time (s): %f' % (t2 - t1))
 			if not self.headless:
-				if self.solve_options['rebuild']:
-					ps.register_volume_mesh(
-						'tet domain',
-						self.tet_solver.get_vertices(),
-						self.tet_solver.get_tets(),
-					)
+				ps.register_volume_mesh(
+					'tet domain',
+					self.tet_solver.get_vertices(),
+					self.tet_solver.get_tets(),
+				)
 				# TODO: isolines not yet bound in Polyscope: https://github.com/nmwsharp/polyscope-py/issues/36
 				ps.get_volume_mesh('tet domain').add_scalar_quantity('GSD', self.phi, cmap=cmap, enabled=True)
 		else:
@@ -116,10 +112,9 @@ class DemoSolver:
 			if self.solve_options['verbose']:
 				print('Solve time (s): %f' % (t2 - t1))
 			if not self.headless:
-				if self.solve_options['rebuild']:
-					grid_sizes = self.grid_solver.get_grid_resolution()
-					bboxMin, bboxMax = self.grid_solver.get_bbox()
-					ps.register_volume_grid('grid domain', grid_sizes, bboxMin, bboxMax)
+				grid_sizes = self.grid_solver.get_grid_resolution()
+				bboxMin, bboxMax = self.grid_solver.get_bbox()
+				ps.register_volume_grid('grid domain', grid_sizes, bboxMin, bboxMax)
 				self.grid_scalar_q = ps.get_volume_grid('grid domain').add_scalar_quantity(
 					'GSD',
 					self.grid_solver.to_grid_array(self.phi),
@@ -144,7 +139,6 @@ class DemoSolver:
 				ps.get_point_cloud('point cloud').set_ignore_slice_plane(self.ps_plane, True)
 
 		self.last_solver_mode = self.mesh_mode
-		self.solve_options['rebuild'] = False
 
 	def callback(self) -> None:
 		if psim.Button('Solve'):
@@ -155,21 +149,21 @@ class DemoSolver:
 			self.mesh_mode = 'grid'
 
 		_, self.solve_options['t_coef'] = psim.InputFloat('tCoef (diffusion time)', self.solve_options['t_coef'])
-		changed_x, self.solve_options['resolution'][0] = psim.InputFloat(
-			'Resolution (x-axis)', self.solve_options['resolution'][0]
-		)
-		if changed_x:
-			self.solve_options['rebuild'] = True
-		changed_y, self.solve_options['resolution'][1] = psim.InputFloat(
-			'Resolution (y-axis)', self.solve_options['resolution'][1]
-		)
-		if changed_y:
-			self.solve_options['rebuild'] = True
-		changed_z, self.solve_options['resolution'][2] = psim.InputFloat(
-			'Resolution (z-axis)', self.solve_options['resolution'][2]
-		)
-		if changed_z:
-			self.solve_options['rebuild'] = True
+
+		if self.mesh_mode == 'grid':
+			changed_x, self.solve_options['resolution'][0] = psim.InputFloat(
+				'Resolution (x-axis)', self.solve_options['resolution'][0]
+			)
+			changed_y, self.solve_options['resolution'][1] = psim.InputFloat(
+				'Resolution (y-axis)', self.solve_options['resolution'][1]
+			)
+			changed_z, self.solve_options['resolution'][2] = psim.InputFloat(
+				'Resolution (z-axis)', self.solve_options['resolution'][2]
+			)
+		elif self.mesh_mode == 'tet':
+			changed, self.solve_options['resolution'][0] = psim.InputFloat(
+				'Resolution', self.solve_options['resolution'][0]
+			)
 
 		if self.mesh_mode != 'grid':
 			if psim.RadioButton(

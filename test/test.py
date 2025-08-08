@@ -15,7 +15,7 @@ else:
 	# normal / unix case
 	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'build')))
 
-asset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'deps/signed-heat-3d/test/assets'))
+asset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '.', 'assets'))
 
 import signed_heat_method as shm
 
@@ -135,8 +135,8 @@ class TestTetSolver:
 
 	def test_get_vertices(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
+		solver = shm.SignedHeatTetSolver(verbose=True)
+		solve_options = {'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		vertices = solver.get_vertices()
 		assert len(vertices.shape) == 2, 'Vertex array of tet mesh should be a 2D NumPy array.'
@@ -147,8 +147,8 @@ class TestTetSolver:
 
 	def test_get_tets(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
+		solver = shm.SignedHeatTetSolver(verbose=True)
+		solve_options = {'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		vertices = solver.get_vertices()
 		tets = solver.get_tets()
@@ -166,7 +166,7 @@ class TestTetSolver:
 	def test_compute_distance_to_mesh(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatTetSolver(verbose=True)
-		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
+		solve_options = {'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Approximate the ground-truth distance, assuming test mesh is closed & perfect.
@@ -181,7 +181,7 @@ class TestTetSolver:
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 		solver = shm.SignedHeatTetSolver(verbose=True)
-		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION}
+		solve_options = {'resolution': TET_RESOLUTION}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Make sure distance is close to naive distance
@@ -207,8 +207,8 @@ class TestTetSolver:
 
 	def test_isosurface(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatTetSolver(verbose=False)
-		solve_options = {'rebuild': True, 'resolution': TET_RESOLUTION, 'level_set_constraint': 'ZeroSet'}
+		solver = shm.SignedHeatTetSolver(verbose=True)
+		solve_options = {'resolution': TET_RESOLUTION, 'level_set_constraint': 'ZeroSet'}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		V_iso, F_iso = solver.isosurface(phi, 0.0)
 		error = self.average_squared_distance(V, F, V_iso, F_iso)
@@ -218,8 +218,8 @@ class TestTetSolver:
 class TestGridSolver:
 	def test_get_grid_resolution(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatGridSolver(verbose=False)
-		solve_options = {'rebuild': True}
+		solver = shm.SignedHeatGridSolver(verbose=True)
+		solve_options = {}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		grid_res = solver.get_grid_resolution()
 		print(grid_res)
@@ -228,8 +228,8 @@ class TestGridSolver:
 
 	def test_get_bbox(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatGridSolver(verbose=False)
-		solve_options = {'rebuild': True}
+		solver = shm.SignedHeatGridSolver(verbose=True)
+		solve_options = {}
 		phi = solver.compute_distance_to_mesh(V, F, options=solve_options)
 		bbox_min, bbox_max = solver.get_bbox()
 		assert (len(bbox_min) == 3) and (len(bbox_max) == 3), 'Grid corners should be 3D positions.'
@@ -239,8 +239,8 @@ class TestGridSolver:
 
 	def test_to_grid_array(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
-		solver = shm.SignedHeatGridSolver(verbose=False)
-		solve_options = {'rebuild': True}
+		solver = shm.SignedHeatGridSolver(verbose=True)
+		solve_options = {}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		phi_grid = solver.to_grid_array(phi)
 		assert len(phi_grid.shape) == 3, 'SDF on grid should be a 3D NumPy array.'
@@ -248,7 +248,7 @@ class TestGridSolver:
 	def test_compute_distance_to_mesh(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatGridSolver(verbose=True)
-		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
+		solve_options = {'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_mesh(V=V, F=F, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Make sure distance is close to naive distance.
@@ -265,7 +265,7 @@ class TestGridSolver:
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
 		solver = shm.SignedHeatGridSolver(verbose=True)
-		solve_options = {'rebuild': True, 'resolution': np.array([32, 32, 32])}
+		solve_options = {'resolution': np.array([32, 32, 32])}
 		phi = solver.compute_distance_to_point_cloud(P=P, N=N, options=solve_options)
 		assert len(phi.shape) == 1, 'SDF should be a 1D NumPy array.'
 		# Make sure distance is close to naive distance.

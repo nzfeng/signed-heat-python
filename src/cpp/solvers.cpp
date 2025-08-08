@@ -2,8 +2,8 @@
 #include "geometrycentral/surface/surface_mesh_factories.h"
 #include "geometrycentral/surface/vertex_position_geometry.h"
 
-#include "signed_heat_grid_solver.h"
-#include "signed_heat_tet_solver.h"
+#include "signedheat3d/signed_heat_grid_solver.h"
+#include "signedheat3d/signed_heat_tet_solver.h"
 
 #include <nanobind/eigen/dense.h>
 #include <nanobind/nanobind.h>
@@ -20,7 +20,7 @@ using namespace geometrycentral::pointcloud;
 
 SignedHeat3DOptions toSignedHeatOptions(const std::string& levelSetConstraint, double tCoef,
                                         const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
-                                        const Eigen::Vector3i& resolution, bool rebuild) {
+                                        const Eigen::Vector3i& resolution) {
 
   auto toLower = [&](const std::string& s) -> std::string {
     std::string t = s;
@@ -44,7 +44,6 @@ SignedHeat3DOptions toSignedHeatOptions(const std::string& levelSetConstraint, d
     options.bboxMax[i] = bboxMax[i];
     options.resolution[i] = resolution[i];
   }
-  options.rebuild = rebuild;
   return options;
 }
 
@@ -113,24 +112,24 @@ public:
                                           const std::vector<std::vector<int64_t>>& faces,
                                           const std::string& levelSetConstraint, double tCoef,
                                           const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
-                                          const Eigen::Vector3i& resolution, bool rebuild) {
+                                          const Eigen::Vector3i& resolution) {
 
     std::unique_ptr<SurfaceMesh> mesh;
     std::unique_ptr<VertexPositionGeometry> geometry;
     std::tie(mesh, geometry) = makeSurfaceGeometry(vertices, faces);
-    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMin, resolution, rebuild);
+    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMin, resolution);
     return solver->computeDistance(*geometry, options);
   }
 
   Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
                                                  const std::string& levelSetConstraint, double tCoef,
                                                  const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
-                                                 const Eigen::Vector3i& resolution, bool rebuild) {
+                                                 const Eigen::Vector3i& resolution) {
 
     std::unique_ptr<PointCloud> cloud;
     std::unique_ptr<PointPositionNormalGeometry> pointGeom;
     std::tie(cloud, pointGeom) = makePointCloudGeometry(points, normals);
-    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMin, resolution, rebuild);
+    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMin, resolution);
     return solver->computeDistance(*pointGeom, options);
   }
 
@@ -189,24 +188,23 @@ public:
   Vector<double> compute_distance_to_mesh(const DenseMatrix<double>& vertices,
                                           const std::vector<std::vector<int64_t>>& faces, double tCoef,
                                           const Eigen::Vector3d& bboxMin, const Eigen::Vector3d& bboxMax,
-                                          const Eigen::Vector3i& resolution, bool rebuild) {
+                                          const Eigen::Vector3i& resolution) {
 
     std::unique_ptr<SurfaceMesh> mesh;
     std::unique_ptr<VertexPositionGeometry> geometry;
     std::tie(mesh, geometry) = makeSurfaceGeometry(vertices, faces);
-    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMin, resolution, rebuild);
+    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMin, resolution);
     return solver->computeDistance(*geometry, options);
   }
 
   Vector<double> compute_distance_to_point_cloud(const DenseMatrix<double>& points, const DenseMatrix<double>& normals,
                                                  double tCoef, const Eigen::Vector3d& bboxMin,
-                                                 const Eigen::Vector3d& bboxMax, const Eigen::Vector3i& resolution,
-                                                 bool rebuild) {
+                                                 const Eigen::Vector3d& bboxMax, const Eigen::Vector3i& resolution) {
 
     std::unique_ptr<PointCloud> cloud;
     std::unique_ptr<PointPositionNormalGeometry> pointGeom;
     std::tie(cloud, pointGeom) = makePointCloudGeometry(points, normals);
-    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMin, resolution, rebuild);
+    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMin, resolution);
     return solver->computeDistance(*pointGeom, options);
   }
 
@@ -234,8 +232,7 @@ NB_MODULE(shm3d_bindings, m) {
       	nb::arg("t_coef"),
         nb::arg("bbox_min"),
         nb::arg("bbox_max"),
-      	nb::arg("resolution"),
-      	nb::arg("rebuild"))
+      	nb::arg("resolution"))
       .def("compute_distance_to_point_cloud", &SignedHeatTetSolverWrapper::compute_distance_to_point_cloud,
       	nb::arg("points"),
       	nb::arg("normals"),
@@ -243,8 +240,7 @@ NB_MODULE(shm3d_bindings, m) {
       	nb::arg("t_coef"),
       	nb::arg("bbox_min"),
         nb::arg("bbox_max"),
-        nb::arg("resolution"),
-      	nb::arg("rebuild"))
+        nb::arg("resolution"))
       .def("isosurface", &SignedHeatTetSolverWrapper::isosurface,
         nb::arg("phi"),
         nb::arg("isoval"));
@@ -259,14 +255,12 @@ NB_MODULE(shm3d_bindings, m) {
       	nb::arg("t_coef"),
       	nb::arg("bbox_min"),
         nb::arg("bbox_max"),
-        nb::arg("resolution"),
-      	nb::arg("rebuild"))
+        nb::arg("resolution"))
       .def("compute_distance_to_point_cloud", &SignedHeatGridSolverWrapper::compute_distance_to_point_cloud,
       	nb::arg("points"),
       	nb::arg("normals"),
       	nb::arg("t_coef"),
       	nb::arg("bbox_min"),
         nb::arg("bbox_max"),
-        nb::arg("resolution"),
-      	nb::arg("rebuild"));
+        nb::arg("resolution"));
 }
