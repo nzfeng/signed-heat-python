@@ -15,7 +15,7 @@ else:
 	# normal / unix case
 	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'build')))
 
-asset_path = os.path.abspath(os.path.dirname(__file__))
+asset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'deps/signed-heat-3d/test/assets'))
 
 import signed_heat_method as shm
 
@@ -176,7 +176,7 @@ class TestTetSolver:
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
 		residual[np.isnan(residual)] = 0.0
-		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
+		assert np.mean(residual) < 2e-2, 'SDF not close to approximate ground-truth.'
 
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
@@ -191,7 +191,7 @@ class TestTetSolver:
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
 		residual[np.isnan(residual)] = 0.0
-		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
+		assert np.mean(residual) < 2e-2, 'SDF not close to approximate ground-truth.'
 
 	def average_squared_distance(
 		self, V1: np.ndarray, F1: list[list[int]], V2: np.ndarray, F2: list[list[int]]
@@ -260,7 +260,7 @@ class TestGridSolver:
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
 		residual[np.isnan(residual)] = 0.0
-		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
+		assert np.mean(residual) < 2e-2, 'SDF not close to approximate ground-truth.'
 
 	def test_compute_distance_to_point_cloud(self) -> None:
 		P, N = read_point_cloud(os.path.join(asset_path, 'bunny.pc'))
@@ -276,4 +276,4 @@ class TestGridSolver:
 		span = np.amax(signed_distances) - np.amin(signed_distances)
 		residual = (phi - signed_distances) / span
 		residual[np.isnan(residual)] = 0.0
-		assert np.mean(residual) < 2e-2, 'SDF not close to ground-truth.'
+		assert np.mean(residual) < 2e-2, 'SDF not close to approximate ground-truth.'
