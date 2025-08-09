@@ -22,36 +22,6 @@ include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-
 
 add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
 
-# Make sure we have Boost (for AMGCL)
-find_package(Boost)
-if(NOT Boost_FOUND)
-	message("Boost not found")
-	message(STATUS "Downloading and extracting Boost library sources. This will take some time...")
-	#set(BOOST_INCLUDE_LIBRARIES property_tree)
-	set(BOOST_ENABLE_CMAKE ON)
-	Set(FETCHCONTENT_QUIET FALSE) # print downloading progress
-	include(FetchContent)
-	FetchContent_Declare(
-	  Boost
-	  GIT_REPOSITORY https://github.com/boostorg/boost.git
-	  GIT_TAG boost-1.73.0
-	  GIT_SHALLOW TRUE
-	)
-	FetchContent_MakeAvailable(Boost)
-
-	# amgcl only needs property_tree, but in Boost every file is seemingly included by every other file :((
-	file(GLOB V_GLOB LIST_DIRECTORIES true ${boost_SOURCE_DIR}/libs/*)
-	foreach(item ${V_GLOB})
-	  if(IS_DIRECTORY ${item})
-	    include_directories(${item}/include/)
-	  endif()
-	endforeach()
-
-	set(BOOST_ROOT "${boost_SOURCE_DIR}")
-	set(BOOST_INCLUDEDIR "${boost_SOURCE_DIR}/libs")
-	set(BOOST_LIBRARYDIR "${boost_SOURCE_DIR}/libs")
-endif()
-
 target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d)
 
 install(TARGETS shm3d_bindings LIBRARY DESTINATION .)
