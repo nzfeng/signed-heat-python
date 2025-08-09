@@ -27,7 +27,7 @@ find_package(Boost)
 if(NOT Boost_FOUND)
 	message("Boost not found")
 	message(STATUS "Downloading and extracting Boost library sources. This will take some time...")
-	set(BOOST_INCLUDE_LIBRARIES property_tree)
+	#set(BOOST_INCLUDE_LIBRARIES property_tree)
 	set(BOOST_ENABLE_CMAKE ON)
 	Set(FETCHCONTENT_QUIET FALSE) # print downloading progress
 	include(FetchContent)
@@ -41,17 +41,15 @@ if(NOT Boost_FOUND)
 
 	# amgcl only needs property_tree, but in Boost every file is seemingly included by every other file :((
 	file(GLOB V_GLOB LIST_DIRECTORIES true ${boost_SOURCE_DIR}/libs/*)
-	message("${boost_SOURCE_DIR}")
 	foreach(item ${V_GLOB})
 	  if(IS_DIRECTORY ${item})
-	  	message("${item}")
 	    include_directories(${item}/include/)
 	  endif()
 	endforeach()
 
-	set(BOOST_INCLUDEDIR "${Boost_INCLUDE_DIRS}")
-	set(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIRS}/libs")
 	set(BOOST_ROOT "${boost_SOURCE_DIR}")
+	set(BOOST_INCLUDEDIR "${boost_SOURCE_DIR}/libs")
+	set(BOOST_LIBRARYDIR "${boost_SOURCE_DIR}/libs")
 endif()
 
 target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d)
