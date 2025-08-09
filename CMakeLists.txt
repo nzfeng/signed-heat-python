@@ -20,12 +20,7 @@ nanobind_add_module(shm3d_bindings
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp)
 include_directories(shm3d_bindings ${CMAKE_CURRENT_SOURCE_DIR}/deps/signed-heat-3d/include)
 
-add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
-
 # Make sure we have Boost (for AMGCL)
-if (CMAKE_VERSION LESS 3.3)
-    cmake_policy(SET CMP0058 OLD)
-endif()
 find_package(Boost)
 if(NOT Boost_FOUND)
 	message("Boost not found")
@@ -52,6 +47,8 @@ if(NOT Boost_FOUND)
 	  endif()
 	endforeach()
 endif()
+
+add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
 
 target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d)
 

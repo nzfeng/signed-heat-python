@@ -65,12 +65,13 @@ Point clouds are currently assumed to have file extension `.pc` and consist of n
 
 In addition to the mesh file, you can pass several flags.
 
-|flag | purpose|
+|flag | default| purpose|
 | ------------- |-------------|
-|`--g`, `--grid`| Solve on a background grid. By default, the domain will be discretized as a tet mesh. |
-|`--v`, `--verbose`| Verbose output. Off by default.|
-|`--s`| Controls the tet/grid spacing proportional to $2^{-h}$, with larger values indicating more refinement. Default value is 0.|
-|`--l`, `--headless`| Don't use the GUI, and automatically solve for & export the generalized SDF.|
+|`--g`, `--grid`| `False` | Solve on a background grid. By default, the domain will be discretized as a tet mesh. |
+|`--b`| `np.array([1.0, 1.0, 1.0, -1.0, -1.0, -1.0], dtype=np.float64))` | Set the 3D positions of the minimum & maximum corners of the rectangular domain. If the corner positions are not valid, a bounding box will automatically be computed. |
+|`--v`, `--verbose`| Off | Verbose output. Off by default.|
+|`--s`| `np.array([32, 32, 32], dtype=np.int64))` | Sets the resolution of the domain, by defining the number of nodes in each dimension. If solving on a tet mesh, only the first value is relevant. |
+|`--l`, `--headless`| Off | Don't use the GUI, and automatically solve for & export the generalized SDF.|
 
 <!-- ## TODOs
 
