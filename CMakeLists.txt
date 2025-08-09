@@ -46,6 +46,10 @@ if(NOT Boost_FOUND)
 	    include_directories(${item}/include/)
 	  endif()
 	endforeach()
+
+	set(BOOST_INCLUDEDIR "${Boost_INCLUDE_DIRS}")
+	set(BOOST_LIBRARYDIR "${Boost_INCLUDE_DIRS}/libs")
+	set(BOOST_ROOT "${boost_SOURCE_DIR}")
 endif()
 
 add_definitions(-UAMGCL_NO_BOOST) # explicitly un-define AMGCL's "ANGCL_NO_BOOST" variable, so we do indeed use Boost
