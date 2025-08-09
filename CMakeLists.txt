@@ -48,11 +48,11 @@ if(NOT Boost_FOUND)
 	endforeach()
 
 	set(BOOST_ROOT "${boost_SOURCE_DIR}")
-	set(BOOST_INCLUDEDIR "${boost_SOURCE_DIR}/libs")
-	set(BOOST_LIBRARYDIR "${boost_SOURCE_DIR}/libs")
+	set(BOOST_INCLUDEDIR "${boost_SOURCE_DIR}")
+	set(BOOST_LIBRARYDIR "${boost_SOURCE_DIR}")
 	set(Boost_FOUND TRUE)
 endif()
 
-target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d boost::propertytree)
+target_link_libraries(shm3d_bindings PRIVATE signed-heat-3d Boost::boost)
 
 install(TARGETS shm3d_bindings LIBRARY DESTINATION .)
