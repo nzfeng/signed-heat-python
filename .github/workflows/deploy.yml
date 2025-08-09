@@ -1,4 +1,4 @@
-name: Build and upload to PyPI
+name: Build and upload to TestPyPI
 
 on:
   push:
@@ -10,96 +10,82 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Adapted from https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
   build_sdist:
 
     if: contains(github.event.head_commit.message, '[ci publish]')
 
     strategy:
       matrix:
-        # macos-13 is an intel runner, macos-14 is apple silicon
         os: [ubuntu-latest, windows-latest, macos-13, macos-14]
 
     name: Build source distribution ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-
-    - if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt-get install ninja-build -y
-
-    - name: Build sdist
-      run: pipx run build --sdist
-
-    - name: Validate wheel
-      run: |
-        pip install twine
-        twine check dist/*
-
-    # - name: Validate sdist
-    #   run: |
-    #     pip install dist/*
-    #     pip install numpy pytest
-    #     pytest
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: signed_heat_method-sdist
-        path: dist/*.tar.gz
-
-
-  build_wheels:
-    name: Wheels on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-13, macos-14, windows-latest]
 
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: true
-
-    - name: Build wheels
-      uses: pypa/cibuildwheel@v2.22
-
-    - name: Upload wheels
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
       uses: actions/upload-artifact@v4
       with:
-        path: wheelhouse/*.whl
-        name: signed_heat_method-wheels-${{ matrix.os }}
+        name: python-package-distributions
+        path: dist/
 
-  # upload_pypi:
-  #   name: Upload release to PyPI
-
-  #   if: contains(github.event.head_commit.message, '[ci publish]')
-
-  #   needs: [build_wheels, build_sdist]
+  # publish-to-pypi:
+  #   name: >-
+  #     Publish Python distribution to PyPI
+  #   if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+  #   needs:
+  #   - build
   #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: pypi
+  #     url: https://pypi.org/p/signed_heat_method
+  #   permissions:
+  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
 
-    # steps:
-    # - uses: actions/download-artifact@v4
-    # - name: Flatten directory structure
-    #   run: |
-    #     mkdir -p dist/
-    #     find . -name '*.whl' -exec mv {} dist/ \;
-    #     find . -name '*.tar.gz' -exec mv {} dist/ \;
+  #   steps:
+  #   - name: Download all the dists
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       name: python-package-distributions
+  #       path: dist/
+  #   - name: Publish distribution to PyPI
+  #     uses: pypa/gh-action-pypi-publish@release/v1
 
-    # - name: List artifacts
-    #   run: ls -R
+  publish-to-testpypi:
+    name: Publish Python distribution to TestPyPI
+    needs:
+    - build
+    runs-on: ubuntu-latest
 
-    # - uses: pypa/gh-action-pypi-publish@v1.12.2
-    #   with:
-    #     user: __token__
-    #     password: ${{ secrets.PYPI_TOKEN }}
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/signed_heat_method
 
-    # - name: Release
-    #   uses: softprops/action-gh-release@v2
-    #   with:
-    #     generate_release_notes: true
-    #     files: |
-    #       ./dist/*.whl
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/

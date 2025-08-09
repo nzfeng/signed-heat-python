@@ -27,7 +27,7 @@ find_package(Boost)
 if(NOT Boost_FOUND)
 	message("Boost not found")
 	message(STATUS "Downloading and extracting Boost library sources. This will take some time...")
-	set(BOOST_INCLUDE_LIBRARIES property_tree)
+	set(BOOST_INCLUDE_LIBRARIES property_tree program_options serialization unit_test_framework)
 	set(BOOST_ENABLE_CMAKE ON)
 	Set(FETCHCONTENT_QUIET FALSE) # print downloading progress
 	include(FetchContent)
