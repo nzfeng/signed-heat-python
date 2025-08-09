@@ -18,7 +18,7 @@ classifiers = [
 dependencies = [
   "numpy"
 ]
-description = "Python bindings for the signed-heat-3d library"
+description = "Python bindings for the signed-heat-3d library, which implements the Signed Heat Method for generalized signed distance."
 maintainers = [
   {name = "Nicole Feng", email = "nfeng@andrew.cmu.edu"}
 ]

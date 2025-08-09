@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-13, macos-14] # windows-latest
+        os: [windows-latest] # ubuntu-latest, macos-13, macos-14, windows-latest
 
     name: Build source distribution ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -39,12 +39,6 @@ jobs:
       run: |
         sudo apt-get -y update
         sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libboost-serialization-dev
-    - name: Install Boost
-      if: runner.os == 'Windows'
-      uses: MarkusJx/install-boost@v2
-      id: install-boost
-      with:
-        boost_version: 1.73.0
 
     - name: Set up Python
       uses: actions/setup-python@v5
