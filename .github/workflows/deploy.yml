@@ -3,7 +3,7 @@ name: Build and upload to (Test)PyPI
 on:
   push:
     branches:
-    - master
+    - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
