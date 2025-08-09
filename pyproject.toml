@@ -2,6 +2,10 @@
 build-backend = "scikit_build_core.build"
 requires = ["scikit-build-core", "nanobind"]
 
+[cmake.define]
+logging.level = "INFO"
+sdist.exclude = [".github", "*.png", "test", ".mypy_cache", ".pre-commit-config.yaml", "*_cache", "CONTRIBUTING.md", ".gitignore", ".gitmodules"]
+
 [project]
 authors = [
   {name = "Nicole Feng", email = "nicolefeng7@gmail.com"}
@@ -62,11 +66,5 @@ ignore = ["F403", "F405", "E402", "F841"]
 build-dir = "build/{wheel_tag}"
 minimum-version = "0.10"
 build.verbose = true
-
-[tool.scikit-build.cmake]
-build-type = "Release"
-version = "CMakeLists.txt"
-
-[tool.scikit-build.cmake.define]
-logging.level = "INFO"
-sdist.exclude = [".github", "*.png", "test", ".mypy_cache", ".pre-commit-config.yaml", "*_cache", "CONTRIBUTING.md", ".gitignore", ".gitmodules"]
+cmake.build-type = "Release"
+cmake.version = "CMakeLists.txt"
