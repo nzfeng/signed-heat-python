@@ -9,7 +9,7 @@ import polyscope.imgui as psim
 
 from mesh_io import *
 
-import signed_heat_method as shm
+import signedheat3d as shm
 
 
 class DemoSolver:

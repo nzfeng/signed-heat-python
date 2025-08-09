@@ -74,7 +74,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   environment:
   #     name: pypi
-  #     url: https://pypi.org/p/signed_heat_method
+  #     url: https://pypi.org/p/signedheat3d
   #   permissions:
   #     id-token: write  # IMPORTANT: mandatory for trusted publishing
 
@@ -95,7 +95,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/signed_heat_method
+      url: https://test.pypi.org/p/signedheat3d
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing

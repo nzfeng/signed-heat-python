@@ -1,8 +1,6 @@
-# signed_heat_method
+# signedheat3d (Python package)
 
 ## Documentation lives at [https://nzfeng.github.io/signed-heat-3d/py](https://nzfeng.github.io/signed-heat-3d/py)
-
-**This project has not yet been released on PyPI -- but stay tuned!**
 
 ![teaser image](https://github.com/nzfeng/signed-heat-3d/blob/main/media/teaser.png)
 
@@ -13,10 +11,10 @@ A Python library implementing the [Signed Heat Method](https://nzfeng.github.io/
 
 ## Installation
 
-The recommended way to install `signed_heat_method` is via PyPI:
+The recommended way to install `signedheat3d` is via PyPI:
 
 ```
-pip install signed_heat_method
+pip install signedheat3d
 ```
 You can also clone the repository and install it from source:
 ```
@@ -43,7 +41,7 @@ You may need to install Boost since `signed-heat-3d` depends on [`amgcl`](https:
 sudo apt-get -y update
 sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libboost-serialization-dev
 ```
-Windows users should probably follow the instructions on the [Boost website](https://www.boost.org/releases/latest/).
+Windows users should follow the instructions on the [Boost website](https://www.boost.org/releases/latest/).
 
 ## Demo program
 

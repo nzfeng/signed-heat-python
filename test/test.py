@@ -17,7 +17,7 @@ else:
 
 asset_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '.', 'assets'))
 
-import signed_heat_method as shm
+import signedheat3d as shm
 
 TET_RESOLUTION = np.array([8, 8, 8]) if platform.system != 'linux' else np.array([2, 2, 2])
 
