@@ -27,6 +27,25 @@ jobs:
       with:
         persist-credentials: false
         submodules: recursive
+
+    - name: Install Boost
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        brew upgrade
+        brew install boost
+    - name: Install Boost
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get -y update
+        sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libboost-serialization-dev
+    - name: Install Boost
+      if: runner.os == 'Windows'
+      uses: MarkusJx/install-boost@v2
+      id: install-boost
+      with:
+        boost_version: 1.73.0
+
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
