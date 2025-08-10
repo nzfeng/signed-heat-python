@@ -36,12 +36,12 @@ This project has the following submodules, which should have been installed in t
 * [nanobind](https://nanobind.readthedocs.io/en/latest/)
 * [signed-heat-3d](https://github.com/nzfeng/signed-heat-3d)
 
-You may need to install Boost since `signed-heat-3d` depends on [`amgcl`](https://github.com/ddemidov/amgcl), which depends on Boost. Boost can be installed on macOS using `brew install boost`, and the necessary modules on Ubuntu using
+You may need to install Boost since `signed-heat-3d` depends on [`amgcl`](https://github.com/ddemidov/amgcl), which depends on Boost. Pip-installing `signed-heat-3d` should download Boost if it is not found on your system; Boost can also be installed on macOS using `brew install boost`, and the necessary modules on Ubuntu using
 ```
 sudo apt-get -y update
 sudo apt-get -y install libboost-dev libboost-test-dev libboost-program-options-dev libboost-serialization-dev
 ```
-Windows users should follow the instructions on the [Boost website](https://www.boost.org/releases/latest/).
+Windows users would follow the instructions on the [Boost website](https://www.boost.org/releases/latest/).
 
 ## Demo program
 
@@ -65,8 +65,8 @@ Point clouds are currently assumed to have file extension `.pc` and consist of n
 
 In addition to the mesh file, you can pass several flags.
 
-|flag | default| purpose|
-| ------------- |-------------|
+|flag | default | purpose|
+| ------------- |-------------|-------------|
 |`--g`, `--grid`| `False` | Solve on a background grid. By default, the domain will be discretized as a tet mesh. |
 |`--b`| `np.array([1.0, 1.0, 1.0, -1.0, -1.0, -1.0], dtype=np.float64))` | Set the 3D positions of the minimum & maximum corners of the rectangular domain. If the corner positions are not valid, a bounding box will automatically be computed. |
 |`--v`, `--verbose`| Off | Verbose output. Off by default.|
