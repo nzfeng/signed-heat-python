@@ -1,6 +1,6 @@
 # signedheat3d (Python package)
 
-## Documentation lives at [https://nzfeng.github.io/signed-heat-3d/py](https://nzfeng.github.io/signed-heat-docs/py)
+## Documentation lives at [https://nzfeng.github.io/signed-heat-docs/py](https://nzfeng.github.io/signed-heat-docs/py)
 
 ![teaser image](https://github.com/nzfeng/signed-heat-3d/blob/main/media/teaser.png)
 
