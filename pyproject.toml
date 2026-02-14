@@ -25,7 +25,7 @@ maintainers = [
 name = "signedheat3d"
 readme = "README.md"
 requires-python = ">=3.7"
-version = "1.0.0"
+version = "1.1.0"
 license.file = "LICENSE"
 
 [project.urls]
