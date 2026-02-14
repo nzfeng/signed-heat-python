@@ -229,9 +229,16 @@ class TestGridSolver:
 	def test_get_bbox(self) -> None:
 		V, F = pp3d.read_polygon_mesh(os.path.join(asset_path, 'bunny_small.obj'))
 		solver = shm.SignedHeatGridSolver(verbose=True)
-		solve_options = {}
+		set_bbox_min = np.array([-1, -1, -1], dtype=float)
+		set_bbox_max = np.array([1, 1, 1], dtype=float)
+		solve_options = {
+			'bbox_min': set_bbox_min,
+			'bbox_max': set_bbox_max,
+		}
 		phi = solver.compute_distance_to_mesh(V, F, options=solve_options)
 		bbox_min, bbox_max = solver.get_bbox()
+		assert np.linalg.norm(bbox_min - set_bbox_min) < 1e-8, 'bbox_min does not match!'
+		assert np.linalg.norm(bbox_max - set_bbox_max) < 1e-8, 'bbox_max does not match!'
 		assert (len(bbox_min) == 3) and (len(bbox_max) == 3), 'Grid corners should be 3D positions.'
 		assert not np.any((bbox_max - bbox_min) < 0), (
 			'Grid corners should be returned in order of minimal -> maximal node corner.'

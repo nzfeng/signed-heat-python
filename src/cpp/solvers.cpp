@@ -117,7 +117,7 @@ public:
     std::unique_ptr<SurfaceMesh> mesh;
     std::unique_ptr<VertexPositionGeometry> geometry;
     std::tie(mesh, geometry) = makeSurfaceGeometry(vertices, faces);
-    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMin, resolution);
+    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMax, resolution);
     return solver->computeDistance(*geometry, options);
   }
 
@@ -129,7 +129,7 @@ public:
     std::unique_ptr<PointCloud> cloud;
     std::unique_ptr<PointPositionNormalGeometry> pointGeom;
     std::tie(cloud, pointGeom) = makePointCloudGeometry(points, normals);
-    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMin, resolution);
+    SignedHeat3DOptions options = toSignedHeatOptions(levelSetConstraint, tCoef, bboxMin, bboxMax, resolution);
     return solver->computeDistance(*pointGeom, options);
   }
 
@@ -193,7 +193,7 @@ public:
     std::unique_ptr<SurfaceMesh> mesh;
     std::unique_ptr<VertexPositionGeometry> geometry;
     std::tie(mesh, geometry) = makeSurfaceGeometry(vertices, faces);
-    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMin, resolution);
+    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMax, resolution);
     return solver->computeDistance(*geometry, options);
   }
 
@@ -204,7 +204,7 @@ public:
     std::unique_ptr<PointCloud> cloud;
     std::unique_ptr<PointPositionNormalGeometry> pointGeom;
     std::tie(cloud, pointGeom) = makePointCloudGeometry(points, normals);
-    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMin, resolution);
+    SignedHeat3DOptions options = toSignedHeatOptions("None", tCoef, bboxMin, bboxMax, resolution);
     return solver->computeDistance(*pointGeom, options);
   }
 
